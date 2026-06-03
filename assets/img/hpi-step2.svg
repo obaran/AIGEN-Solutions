@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750" font-family="&#39;Space Grotesk&#39;,Arial,sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0E1320"></stop><stop offset="1" stop-color="#080A12"></stop></linearGradient>
+    <linearGradient id="peri" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A5B0EC"></stop><stop offset="1" stop-color="#4A5895"></stop></linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#FFFFFF" stroke-opacity="0.045" stroke-width="1"></path></pattern>
+  </defs>
+  <rect width="1200" height="750" fill="url(#bg)"></rect>
+  <rect width="1200" height="750" fill="url(#grid)"></rect>
+
+  <g transform="translate(90 70)">
+    <circle cx="26" cy="26" r="26" fill="url(#peri)"></circle>
+    <text x="26" y="35" fill="#0A0C12" font-size="26" font-weight="700" text-anchor="middle">2</text>
+    <text x="74" y="22" fill="#A5B0EC" font-size="15" font-weight="700" letter-spacing="2">ÉTAPE 02</text>
+    <text x="74" y="48" fill="#FFFFFF" font-size="26" font-weight="600">Délimitation des zones</text>
+  </g>
+
+  
+  <g transform="translate(150 180)">
+    <rect x="0" y="0" width="560" height="440" rx="6" fill="none" stroke="#5B6480" stroke-width="3"></rect>
+    
+    <path d="M3 3 H280 V210 H3 Z" fill="#A5B0EC" fill-opacity="0.22" stroke="#A5B0EC" stroke-width="2.5"></path>
+    
+    <path d="M280 3 H557 V210 H280 Z" fill="#7D8BD4" fill-opacity="0.22" stroke="#7D8BD4" stroke-width="2.5"></path>
+    
+    <path d="M3 210 H557 V437 H3 Z" fill="#CBD3FF" fill-opacity="0.16" stroke="#CBD3FF" stroke-width="2.5"></path>
+    
+    <g fill="#CBD3FF" stroke="#0E1320" stroke-width="2">
+      <circle cx="3" cy="3" r="6"></circle><circle cx="280" cy="3" r="6"></circle><circle cx="557" cy="3" r="6"></circle>
+      <circle cx="557" cy="210" r="6"></circle><circle cx="280" cy="210" r="6"></circle><circle cx="3" cy="210" r="6"></circle>
+      <circle cx="3" cy="437" r="6"></circle><circle cx="557" cy="437" r="6"></circle>
+    </g>
+    
+    <circle cx="280" cy="210" r="13" fill="none" stroke="#A5B0EC" stroke-width="2"></circle>
+    
+    <g font-weight="600" text-anchor="middle">
+      <text x="140" y="100" fill="#FFFFFF" font-size="19">Appart. A</text><text x="140" y="124" fill="#A5B0EC" font-size="15">T2 · 42 m²</text>
+      <text x="418" y="100" fill="#FFFFFF" font-size="19">Appart. B</text><text x="418" y="124" fill="#A5B0EC" font-size="15">T2 · 41 m²</text>
+      <text x="280" y="320" fill="#FFFFFF" font-size="19">Parties communes</text><text x="280" y="344" fill="#CBD3FF" font-size="15">73 m²</text>
+    </g>
+  </g>
+
+  
+  <g transform="translate(770 230)">
+    <text x="0" y="0" fill="#FFFFFF" font-size="22" font-weight="600">Vous tracez, l&#39;IA comprend</text>
+    <text x="0" y="34" fill="#AEB6C6" font-size="16.5" width="300">Délimitez chaque logement ou zone</text>
+    <text x="0" y="58" fill="#AEB6C6" font-size="16.5">d&#39;un simple contour. L’outil distingue</text>
+    <text x="0" y="82" fill="#AEB6C6" font-size="16.5">les espaces intérieurs et extérieurs.</text>
+
+    <g transform="translate(0 120)">
+      <rect x="0" y="0" width="330" height="64" rx="13" fill="#11151E" stroke="#FFFFFF" stroke-opacity="0.08"></rect>
+      <rect x="16" y="16" width="32" height="32" rx="8" fill="#A5B0EC" fill-opacity="0.18"></rect>
+      <path d="M24 32 h16 M32 24 v16" stroke="#A5B0EC" stroke-width="2.5" stroke-linecap="round"></path>
+      <text x="64" y="30" fill="#FFFFFF" font-size="15.5" font-weight="600">Zones illimitées</text>
+      <text x="64" y="50" fill="#8A93A8" font-size="13.5">Par lot, par étage, par corps d&#39;état</text>
+    </g>
+    <g transform="translate(0 200)">
+      <rect x="0" y="0" width="330" height="64" rx="13" fill="#11151E" stroke="#FFFFFF" stroke-opacity="0.08"></rect>
+      <rect x="16" y="16" width="32" height="32" rx="8" fill="#A5B0EC" fill-opacity="0.18"></rect>
+      <path d="M24 32 l5 5 9 -11" stroke="#A5B0EC" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+      <text x="64" y="30" fill="#FFFFFF" font-size="15.5" font-weight="600">Espaces intérieur / extérieur</text>
+      <text x="64" y="50" fill="#8A93A8" font-size="13.5">Contours intérieurs et extérieurs</text>
+    </g>
+  </g>
+</svg>

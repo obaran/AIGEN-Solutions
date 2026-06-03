@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750" font-family="&#39;Space Grotesk&#39;,Arial,sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0E1320"></stop><stop offset="1" stop-color="#080A12"></stop></linearGradient>
+    <linearGradient id="peri" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A5B0EC"></stop><stop offset="1" stop-color="#4A5895"></stop></linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#FFFFFF" stroke-opacity="0.045" stroke-width="1"></path></pattern>
+  </defs>
+  <rect width="1200" height="750" fill="url(#bg)"></rect>
+  <rect width="1200" height="750" fill="url(#grid)"></rect>
+
+  <g transform="translate(90 70)">
+    <circle cx="26" cy="26" r="26" fill="url(#peri)"></circle>
+    <text x="26" y="35" fill="#0A0C12" font-size="26" font-weight="700" text-anchor="middle">3</text>
+    <text x="74" y="22" fill="#A5B0EC" font-size="15" font-weight="700" letter-spacing="2">ÉTAPE 03</text>
+    <text x="74" y="48" fill="#FFFFFF" font-size="26" font-weight="600">Extraction &amp; chiffrage</text>
+  </g>
+
+  
+  <g transform="translate(90 170)">
+    <rect x="0" y="0" width="640" height="470" rx="18" fill="#11151E" stroke="#FFFFFF" stroke-opacity="0.1"></rect>
+    <text x="28" y="46" fill="#FFFFFF" font-size="20" font-weight="600">Quantités par ouvrage</text>
+    <line x1="28" y1="66" x2="612" y2="66" stroke="#FFFFFF" stroke-opacity="0.1"></line>
+    
+    <g font-size="13.5" fill="#8A93A8" font-weight="600" letter-spacing="0.5">
+      <text x="28" y="98">OUVRAGE</text><text x="360" y="98">QUANTITÉ</text><text x="500" y="98">MATÉRIAU</text>
+    </g>
+    
+    <g font-size="16">
+      <g transform="translate(0 130)"><text x="28" y="0" fill="#EEF1F8">Sol, Séjour</text><text x="360" y="0" fill="#FFFFFF" font-weight="600">28,4 m²</text><text x="500" y="0" fill="#A5B0EC">Carrelage</text></g>
+      <line x1="28" y1="148" x2="612" y2="148" stroke="#FFFFFF" stroke-opacity="0.06"></line>
+      <g transform="translate(0 178)"><text x="28" y="0" fill="#EEF1F8">Peinture murs</text><text x="360" y="0" fill="#FFFFFF" font-weight="600">248,0 m²</text><text x="500" y="0" fill="#A5B0EC">Acrylique</text></g>
+      <line x1="28" y1="196" x2="612" y2="196" stroke="#FFFFFF" stroke-opacity="0.06"></line>
+      <g transform="translate(0 226)"><text x="28" y="0" fill="#EEF1F8">Cloisons</text><text x="360" y="0" fill="#FFFFFF" font-weight="600">84,5 ml</text><text x="500" y="0" fill="#A5B0EC">Placo 72/48</text></g>
+      <line x1="28" y1="244" x2="612" y2="244" stroke="#FFFFFF" stroke-opacity="0.06"></line>
+      <g transform="translate(0 274)"><text x="28" y="0" fill="#EEF1F8">Plinthes</text><text x="360" y="0" fill="#FFFFFF" font-weight="600">96,3 ml</text><text x="500" y="0" fill="#A5B0EC">Carrelage</text></g>
+      <line x1="28" y1="292" x2="612" y2="292" stroke="#FFFFFF" stroke-opacity="0.06"></line>
+      <g transform="translate(0 322)"><text x="28" y="0" fill="#EEF1F8">Faux plafond</text><text x="360" y="0" fill="#FFFFFF" font-weight="600">62,1 m²</text><text x="500" y="0" fill="#A5B0EC">Dalles 600</text></g>
+    </g>
+    
+    <rect x="28" y="356" width="584" height="80" rx="12" fill="url(#peri)" opacity="0.14"></rect>
+    <text x="48" y="392" fill="#AEB6C6" font-size="14">DÉBOURSÉ SEC ESTIMÉ</text>
+    <text x="48" y="420" fill="#FFFFFF" font-size="24" font-weight="700">Calculé par poste</text>
+    <text x="592" y="408" fill="#A5B0EC" font-size="15" text-anchor="end" font-weight="600">selon vos prix unitaires</text>
+  </g>
+
+  
+  <g transform="translate(770 220)">
+    <text x="0" y="0" fill="#FFFFFF" font-size="22" font-weight="600">Prêt pour l&#39;appel d&#39;offres</text>
+    <text x="0" y="34" fill="#AEB6C6" font-size="16.5">Le métré complet, exporté en un clic,</text>
+    <text x="0" y="58" fill="#AEB6C6" font-size="16.5">prêt à intégrer votre devis.</text>
+
+    <g transform="translate(0 96)">
+      <rect x="0" y="0" width="340" height="84" rx="14" fill="#11151E" stroke="url(#peri)" stroke-width="1.5"></rect>
+      <rect x="20" y="22" width="40" height="40" rx="10" fill="#1D7A4D"></rect>
+      <path d="M30 42 l7 8 13 -16" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+      <text x="76" y="38" fill="#FFFFFF" font-size="17" font-weight="600">Export Excel</text>
+      <text x="76" y="60" fill="#8A93A8" font-size="14">Tableau de métré + déboursé</text>
+    </g>
+    <g transform="translate(0 196)">
+      <rect x="0" y="0" width="340" height="84" rx="14" fill="#11151E" stroke="#FFFFFF" stroke-opacity="0.1"></rect>
+      <rect x="20" y="22" width="40" height="40" rx="10" fill="#A5B0EC" fill-opacity="0.18"></rect>
+      <path d="M40 28 v24 M30 42 h20" stroke="#A5B0EC" stroke-width="2.5" stroke-linecap="round"></path>
+      <text x="76" y="38" fill="#FFFFFF" font-size="17" font-weight="600">Publipostage devis</text>
+      <text x="76" y="60" fill="#8A93A8" font-size="14">Génération multi-lots automatique</text>
+    </g>
+  </g>
+</svg>

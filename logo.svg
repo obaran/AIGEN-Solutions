@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" fill="none">
+  <!-- AIGEN Solutions — logo officiel (version figée, couleurs en dur) -->
+  <defs>
+    <linearGradient id="ag-stroke" x1="18" y1="22" x2="82" y2="78" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8E9BE0"/><stop offset="1" stop-color="#4A5895"/>
+    </linearGradient>
+    <linearGradient id="ag-node" x1="32" y1="28" x2="68" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B9C2F2"/><stop offset="1" stop-color="#6E7ECF"/>
+    </linearGradient>
+  </defs>
+  <!-- orbite (le "G") -->
+  <path d="M50 8 A42 42 0 1 1 20 21" stroke="url(#ag-stroke)" stroke-width="6" stroke-linecap="round"/>
+  <!-- satellite -->
+  <circle cx="50" cy="8" r="6.5" fill="#A5B0EC"/>
+  <!-- triangle (le "noyau algorithmique") -->
+  <path d="M50 30 L33 61 L67 61 Z" stroke="url(#ag-stroke)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- rayons internes vers le hub -->
+  <g stroke="#7D8BD4" stroke-width="1.7" stroke-linecap="round" opacity=".85">
+    <line x1="50" y1="50" x2="50" y2="30"/>
+    <line x1="50" y1="50" x2="33" y2="61"/>
+    <line x1="50" y1="50" x2="67" y2="61"/>
+  </g>
+  <!-- nœuds -->
+  <circle cx="50" cy="30" r="4.8" fill="url(#ag-node)"/>
+  <circle cx="33" cy="61" r="4.8" fill="url(#ag-node)"/>
+  <circle cx="67" cy="61" r="4.8" fill="url(#ag-node)"/>
+  <circle cx="50" cy="50" r="3.2" fill="url(#ag-node)"/>
+</svg>

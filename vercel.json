@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    { "source": "/:path*", "has": [{ "type": "host", "value": "aigen-solutions.com" }], "destination": "https://aigen-solutions.fr/:path*", "permanent": true },
+    { "source": "/:path*", "has": [{ "type": "host", "value": "www.aigen-solutions.com" }], "destination": "https://aigen-solutions.fr/:path*", "permanent": true },
+    { "source": "/:path*", "has": [{ "type": "host", "value": "www.aigen-solutions.fr" }], "destination": "https://aigen-solutions.fr/:path*", "permanent": true }
+  ]
+}

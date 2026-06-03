@@ -1,0 +1,6 @@
+.DS_Store
+.thumbnail
+.claude/
+node_modules/
+.vercel
+*.log

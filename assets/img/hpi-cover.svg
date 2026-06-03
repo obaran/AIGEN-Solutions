@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750" font-family="&#39;Space Grotesk&#39;,Arial,sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0E1320"></stop><stop offset="1" stop-color="#080A12"></stop>
+    </linearGradient>
+    <linearGradient id="peri" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A5B0EC"></stop><stop offset="1" stop-color="#4A5895"></stop>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#FFFFFF" stroke-opacity="0.045" stroke-width="1"></path>
+    </pattern>
+    <radialGradient id="scan" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#A5B0EC" stop-opacity="0.5"></stop><stop offset="1" stop-color="#A5B0EC" stop-opacity="0"></stop>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="6"></feGaussianBlur></filter>
+  </defs>
+
+  <rect width="1200" height="750" fill="url(#bg)"></rect>
+  <rect width="1200" height="750" fill="url(#grid)"></rect>
+
+  
+  <ellipse cx="470" cy="400" rx="360" ry="280" fill="url(#scan)" opacity="0.6"></ellipse>
+
+  
+  <g stroke="url(#peri)" stroke-width="3" fill="none" stroke-linejoin="round">
+    
+    <rect x="150" y="180" width="560" height="420" rx="4" stroke-width="4"></rect>
+    
+    <line x1="430" y1="180" x2="430" y2="420"></line>
+    <line x1="150" y1="420" x2="710" y2="420"></line>
+    <line x1="430" y1="300" x2="710" y2="300"></line>
+    <line x1="280" y1="420" x2="280" y2="600"></line>
+    <line x1="520" y1="420" x2="520" y2="600"></line>
+  </g>
+  
+  <g opacity="0.16">
+    <rect x="153" y="183" width="274" height="234" fill="#A5B0EC"></rect>
+    <rect x="433" y="303" width="274" height="114" fill="#7D8BD4"></rect>
+    <rect x="283" y="423" width="234" height="174" fill="#A5B0EC"></rect>
+  </g>
+  
+  <g stroke="#CBD3FF" stroke-width="2" fill="none" opacity="0.7">
+    <path d="M430 360 a40 40 0 0 1 40 -40"></path>
+    <path d="M340 420 a36 36 0 0 0 36 -36"></path>
+  </g>
+
+  
+  <g stroke="#CBD3FF" stroke-width="1.5" opacity="0.85">
+    <line x1="150" y1="150" x2="710" y2="150"></line>
+    <line x1="150" y1="143" x2="150" y2="157"></line>
+    <line x1="710" y1="143" x2="710" y2="157"></line>
+    <line x1="120" y1="180" x2="120" y2="600"></line>
+    <line x1="113" y1="180" x2="127" y2="180"></line>
+    <line x1="113" y1="600" x2="127" y2="600"></line>
+  </g>
+  <text x="430" y="138" fill="#CBD3FF" font-size="18" text-anchor="middle" font-weight="600">14,20 m</text>
+  <text x="95" y="396" fill="#CBD3FF" font-size="18" text-anchor="middle" font-weight="600" transform="rotate(-90 95 396)">10,60 m</text>
+
+  
+  <g font-weight="600">
+    <g>
+      <rect x="225" y="270" width="130" height="58" rx="10" fill="#0E1320" stroke="url(#peri)" stroke-width="1.5"></rect>
+      <text x="290" y="295" fill="#FFFFFF" font-size="20" text-anchor="middle">Séjour</text>
+      <text x="290" y="317" fill="#A5B0EC" font-size="17" text-anchor="middle">28,4 m²</text>
+    </g>
+    <g>
+      <rect x="505" y="332" width="130" height="58" rx="10" fill="#0E1320" stroke="url(#peri)" stroke-width="1.5"></rect>
+      <text x="570" y="357" fill="#FFFFFF" font-size="20" text-anchor="middle">Cuisine</text>
+      <text x="570" y="379" fill="#A5B0EC" font-size="17" text-anchor="middle">11,2 m²</text>
+    </g>
+    <g>
+      <rect x="335" y="482" width="130" height="58" rx="10" fill="#0E1320" stroke="url(#peri)" stroke-width="1.5"></rect>
+      <text x="400" y="507" fill="#FFFFFF" font-size="20" text-anchor="middle">Chambre</text>
+      <text x="400" y="529" fill="#A5B0EC" font-size="17" text-anchor="middle">15,8 m²</text>
+    </g>
+  </g>
+
+  
+  <line x1="150" y1="400" x2="710" y2="400" stroke="#CBD3FF" stroke-width="2" opacity="0.9" stroke-dasharray="2 6"></line>
+  <circle cx="710" cy="400" r="5" fill="#CBD3FF"></circle>
+
+  
+  <g fill="#CBD3FF">
+    <circle cx="150" cy="180" r="4"></circle><circle cx="710" cy="180" r="4"></circle>
+    <circle cx="710" cy="600" r="4"></circle><circle cx="150" cy="600" r="4"></circle>
+    <circle cx="430" cy="180" r="3.5"></circle><circle cx="430" cy="420" r="3.5"></circle>
+  </g>
+
+  
+  <g>
+    <rect x="790" y="180" width="300" height="390" rx="16" fill="#11151E" stroke="#FFFFFF" stroke-opacity="0.1"></rect>
+    <text x="814" y="222" fill="#FFFFFF" font-size="20" font-weight="600">Métré extrait</text>
+    <circle cx="1062" cy="216" r="5" fill="#7D8BD4"></circle>
+    <line x1="814" y1="240" x2="1066" y2="240" stroke="#FFFFFF" stroke-opacity="0.1"></line>
+
+    <g font-size="16">
+      <text x="814" y="278" fill="#AEB6C6">Surface plancher</text>
+      <text x="1066" y="278" fill="#FFFFFF" text-anchor="end" font-weight="600">156,8 m²</text>
+      <text x="814" y="318" fill="#AEB6C6">Cloisons (ml)</text>
+      <text x="1066" y="318" fill="#FFFFFF" text-anchor="end" font-weight="600">84,5 ml</text>
+      <text x="814" y="358" fill="#AEB6C6">Sol carrelage</text>
+      <text x="1066" y="358" fill="#FFFFFF" text-anchor="end" font-weight="600">62,1 m²</text>
+      <text x="814" y="398" fill="#AEB6C6">Peinture murs</text>
+      <text x="1066" y="398" fill="#FFFFFF" text-anchor="end" font-weight="600">248,0 m²</text>
+      <text x="814" y="438" fill="#AEB6C6">Plinthes</text>
+      <text x="1066" y="438" fill="#FFFFFF" text-anchor="end" font-weight="600">96,3 ml</text>
+    </g>
+    <line x1="814" y1="464" x2="1066" y2="464" stroke="#FFFFFF" stroke-opacity="0.1"></line>
+    <rect x="814" y="486" width="252" height="56" rx="11" fill="url(#peri)"></rect>
+    <text x="940" y="513" fill="#0A0C12" font-size="15" text-anchor="middle" font-weight="700">Export chiffrage</text>
+    <text x="940" y="531" fill="#0A0C12" font-size="12" text-anchor="middle" opacity="0.75">Excel · déboursé sec</text>
+  </g>
+
+  
+  <text x="150" y="666" fill="#FFFFFF" font-size="26" font-weight="600">HPI Extraction</text>
+  <text x="150" y="698" fill="#8A93A8" font-size="17">Métré automatique des plans de bâtiment par intelligence artificielle</text>
+  <g transform="translate(150 715)"></g>
+</svg>

@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<svg width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1"></stop>
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1"></stop>
+    </linearGradient>
+    
+    <linearGradient id="phoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1"></stop>
+      <stop offset="100%" style="stop-color:#0080ff;stop-opacity:1"></stop>
+    </linearGradient>
+    
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="coloredBlur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  
+  <rect width="1200" height="800" fill="url(#bgGradient)"></rect>
+  
+  
+  <g opacity="0.1">
+    <line x1="0" y1="200" x2="1200" y2="200" stroke="#00d4ff" stroke-width="1"></line>
+    <line x1="0" y1="400" x2="1200" y2="400" stroke="#00d4ff" stroke-width="1"></line>
+    <line x1="0" y1="600" x2="1200" y2="600" stroke="#00d4ff" stroke-width="1"></line>
+    <line x1="300" y1="0" x2="300" y2="800" stroke="#00d4ff" stroke-width="1"></line>
+    <line x1="600" y1="0" x2="600" y2="800" stroke="#00d4ff" stroke-width="1"></line>
+    <line x1="900" y1="0" x2="900" y2="800" stroke="#00d4ff" stroke-width="1"></line>
+  </g>
+  
+  
+  <g id="phone">
+    <rect x="500" y="250" width="200" height="300" rx="20" fill="#0f3460" stroke="url(#phoneGrad)" stroke-width="4" filter="url(#glow)"></rect>
+    <rect x="520" y="280" width="160" height="220" rx="10" fill="#1a5490" opacity="0.5"></rect>
+    <circle cx="600" cy="530" r="15" fill="url(#phoneGrad)" opacity="0.8"></circle>
+    
+    
+    <g id="soundWaves">
+      <path d="M 450 350 Q 420 400 450 450" fill="none" stroke="#00d4ff" stroke-width="3" opacity="0.7">
+        
+      </path>
+      <path d="M 430 320 Q 390 400 430 480" fill="none" stroke="#00d4ff" stroke-width="3" opacity="0.5">
+        
+      </path>
+      <path d="M 410 290 Q 360 400 410 510" fill="none" stroke="#00d4ff" stroke-width="3" opacity="0.3">
+        
+      </path>
+      
+      
+      <path d="M 750 350 Q 780 400 750 450" fill="none" stroke="#00d4ff" stroke-width="3" opacity="0.7">
+        
+      </path>
+      <path d="M 770 320 Q 810 400 770 480" fill="none" stroke="#00d4ff" stroke-width="3" opacity="0.5">
+        
+      </path>
+      <path d="M 790 290 Q 840 400 790 510" fill="none" stroke="#00d4ff" stroke-width="3" opacity="0.3">
+        
+      </path>
+    </g>
+    
+    
+    <g id="aiBrain">
+      <circle cx="600" cy="380" r="40" fill="none" stroke="#00ff88" stroke-width="2" opacity="0.6">
+        
+      </circle>
+      <circle cx="585" cy="370" r="6" fill="#00ff88"></circle>
+      <circle cx="615" cy="370" r="6" fill="#00ff88"></circle>
+      <circle cx="600" cy="390" r="6" fill="#00ff88"></circle>
+      <circle cx="580" cy="390" r="4" fill="#00ff88" opacity="0.7"></circle>
+      <circle cx="620" cy="390" r="4" fill="#00ff88" opacity="0.7"></circle>
+      
+      
+      <line x1="585" y1="370" x2="600" y2="390" stroke="#00ff88" stroke-width="1.5"></line>
+      <line x1="615" y1="370" x2="600" y2="390" stroke="#00ff88" stroke-width="1.5"></line>
+      <line x1="580" y1="390" x2="600" y2="390" stroke="#00ff88" stroke-width="1"></line>
+      <line x1="620" y1="390" x2="600" y2="390" stroke="#00ff88" stroke-width="1"></line>
+    </g>
+  </g>
+  
+  
+  <g id="available247">
+    <circle cx="950" cy="150" r="80" fill="#0f3460" stroke="url(#phoneGrad)" stroke-width="3" filter="url(#glow)"></circle>
+    <text x="950" y="145" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#00d4ff" text-anchor="middle">24/7</text>
+    <text x="950" y="175" font-family="Arial, sans-serif" font-size="16" fill="#8fa9ba" text-anchor="middle">Disponible</text>
+  </g>
+  
+  
+  <g id="customer">
+    <circle cx="250" cy="400" r="60" fill="#0f3460" stroke="url(#phoneGrad)" stroke-width="3" filter="url(#glow)"></circle>
+    <circle cx="250" cy="385" r="20" fill="#00d4ff"></circle>
+    <path d="M 220 420 Q 250 400 280 420 L 280 440 Q 250 450 220 440 Z" fill="#00d4ff"></path>
+    
+    
+    <rect x="150" y="280" width="140" height="60" rx="10" fill="#1a5490" stroke="#00d4ff" stroke-width="2"></rect>
+    <polygon points="240,340 250,360 260,340" fill="#1a5490" stroke="#00d4ff" stroke-width="2"></polygon>
+    <text x="220" y="305" font-family="Arial, sans-serif" font-size="14" fill="#00d4ff" text-anchor="middle">Question</text>
+    <text x="220" y="325" font-family="Arial, sans-serif" font-size="14" fill="#8fa9ba" text-anchor="middle">client</text>
+  </g>
+  
+  
+  <text x="600" y="80" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="url(#phoneGrad)" text-anchor="middle" filter="url(#glow)">
+    Agent Vocal IA
+  </text>
+  <text x="600" y="120" font-family="Arial, sans-serif" font-size="24" fill="#8fa9ba" text-anchor="middle">
+    Réception d&#39;appels clients automatisée
+  </text>
+  
+  
+  <g id="features">
+    <g transform="translate(200, 600)">
+      <circle cx="0" cy="0" r="5" fill="#00d4ff"></circle>
+      <text x="15" y="5" font-family="Arial, sans-serif" font-size="16" fill="#8fa9ba">Disponibilité 24/7</text>
+    </g>
+    
+    <g transform="translate(450, 600)">
+      <circle cx="0" cy="0" r="5" fill="#00d4ff"></circle>
+      <text x="15" y="5" font-family="Arial, sans-serif" font-size="16" fill="#8fa9ba">IA Conversationnelle</text>
+    </g>
+    
+    <g transform="translate(720, 600)">
+      <circle cx="0" cy="0" r="5" fill="#00d4ff"></circle>
+      <text x="15" y="5" font-family="Arial, sans-serif" font-size="16" fill="#8fa9ba">Transfert si nécessaire</text>
+    </g>
+  </g>
+  
+  
+  <circle cx="150" cy="150" r="30" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.3">
+    
+  </circle>
+  <circle cx="1050" cy="650" r="30" fill="none" stroke="#00ff88" stroke-width="2" opacity="0.3">
+    
+  </circle>
+</svg>

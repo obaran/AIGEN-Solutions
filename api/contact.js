@@ -48,12 +48,12 @@ module.exports = async function (req, res) {
     + '<h2 style="color:#3159C9;margin:0 0 12px">Nouvelle demande — site AIGEN Solutions</h2>'
     + '<p><strong>Nom :</strong> ' + esc(name) + '<br>'
     + '<strong>Email :</strong> ' + esc(email) + '<br>'
-    + '<strong>Entreprise :</strong> ' + (esc(company) || '—') + '<br>'
-    + '<strong>Secteur :</strong> ' + (esc(sector) || '—') + '<br>'
-    + '<strong>Besoin :</strong> ' + (esc(topic) || '—') + '</p>'
+    + '<strong>Entreprise :</strong> ' + (esc(company) || 'non précisé') + '<br>'
+    + '<strong>Secteur :</strong> ' + (esc(sector) || 'non précisé') + '<br>'
+    + '<strong>Besoin :</strong> ' + (esc(topic) || 'non précisé') + '</p>'
     + '<p><strong>Message :</strong><br>' + esc(message).replace(/\n/g, '<br>') + '</p>'
     + '</div>';
-  var subject = 'Nouvelle demande — ' + name + (company ? ' (' + company + ')' : '');
+  var subject = 'Nouvelle demande de ' + name + (company ? ' (' + company + ')' : '');
 
   // 1) Envoi brandé depuis le domaine (actif une fois le domaine vérifié dans Resend).
   var r = await resendSend({ from: PRIMARY_FROM, to: PRIMARY_TO, reply_to: email, subject: subject, html: html });

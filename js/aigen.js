@@ -264,7 +264,7 @@
         + 'Besoin : ' + (d.get('topic') || '') + '\n\n'
         + (d.get('message') || '');
       window.location.href = 'mailto:contact@aigen-solutions.fr?subject='
-        + encodeURIComponent('Nouvelle demande — site AIGEN Solutions')
+        + encodeURIComponent('Nouvelle demande depuis le site AIGEN Solutions')
         + '&body=' + encodeURIComponent(body);
     }
     form.addEventListener('submit', function (e) {

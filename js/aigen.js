@@ -255,6 +255,17 @@
   function contactForm() {
     var form = document.querySelector('[data-contact]');
     if (!form) return;
+    function mailtoFallback(d) {
+      var body = 'Nom : ' + (d.get('name') || '') + '\n'
+        + 'Email : ' + (d.get('email') || '') + '\n'
+        + 'Entreprise : ' + (d.get('company') || '') + '\n'
+        + 'Secteur : ' + (d.get('sector') || '') + '\n'
+        + 'Besoin : ' + (d.get('topic') || '') + '\n\n'
+        + (d.get('message') || '');
+      window.location.href = 'mailto:contact@aigen-solutions.fr?subject='
+        + encodeURIComponent('Nouvelle demande — site AIGEN Solutions')
+        + '&body=' + encodeURIComponent(body);
+    }
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var btn = form.querySelector('[type="submit"]');
@@ -262,35 +273,20 @@
       var err = form.querySelector('[data-form-err]');
       if (ok) ok.classList.remove('show');
       if (err) err.classList.remove('show');
-
-      // Tant que la clé Web3Forms n'est pas renseignée : repli automatique sur le client mail
-      // (le formulaire reste donc 100% fonctionnel). Dès que la clé est collée, l'envoi passe par Web3Forms.
-      var keyEl = form.querySelector('[name="access_key"]');
-      if (!keyEl || !keyEl.value || keyEl.value.indexOf('VOTRE_') === 0) {
-        var d = new FormData(form);
-        var body = 'Nom : ' + (d.get('name') || '') + '\n'
-          + 'Email : ' + (d.get('email') || '') + '\n'
-          + 'Entreprise : ' + (d.get('company') || '') + '\n'
-          + 'Secteur : ' + (d.get('sector') || '') + '\n'
-          + 'Besoin : ' + (d.get('topic') || '') + '\n\n'
-          + (d.get('message') || '');
-        window.location.href = 'mailto:contact@aigen-solutions.fr?subject='
-          + encodeURIComponent('Nouvelle demande — site AIGEN Solutions')
-          + '&body=' + encodeURIComponent(body);
-        if (ok) { ok.classList.add('show'); setTimeout(function () { ok.classList.remove('show'); }, 8000); }
-        return;
-      }
-
+      var fd = new FormData(form);
+      var payload = {};
+      fd.forEach(function (v, k) { payload[k] = v; });
       if (btn) { btn.disabled = true; btn.dataset.orig = btn.textContent; btn.textContent = 'Envoi en cours…'; }
-      fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(form) })
-        .then(function (r) { return r.json(); })
-        .then(function (j) {
-          if (j && j.success) {
+      // Envoi via la fonction serverless /api/contact (Resend). Repli sur le client mail en cas d'échec.
+      fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (o) {
+          if (o.ok && o.j && o.j.success) {
             form.reset();
             if (ok) { ok.classList.add('show'); setTimeout(function () { ok.classList.remove('show'); }, 8000); }
-          } else { throw new Error((j && j.message) || 'Echec'); }
+          } else { throw new Error('fail'); }
         })
-        .catch(function () { if (err) err.classList.add('show'); })
+        .catch(function () { mailtoFallback(fd); })
         .then(function () { if (btn) { btn.disabled = false; btn.textContent = btn.dataset.orig; } });
     });
   }

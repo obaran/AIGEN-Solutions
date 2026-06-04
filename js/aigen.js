@@ -8,7 +8,7 @@
     { href: 'index.html', label: 'Accueil', key: 'accueil' },
     { href: 'solutions.html', label: 'Solutions', key: 'solutions' },
     { href: 'realisations.html', label: 'Réalisations', key: 'realisations' },
-    { href: 'technologies.html', label: 'Technologies', key: 'technologies' },
+    { href: 'technologies.html', label: 'Comprendre l\'IA', key: 'technologies' },
     { href: 'approche.html', label: 'Approche', key: 'approche' }
   ];
 
@@ -75,7 +75,7 @@
           '<div class="footer-col"><h4>Société</h4>' +
             '<a href="approche.html">Notre approche</a>' +
             '<a href="realisations.html">Réalisations</a>' +
-            '<a href="technologies.html">Technologies</a>' +
+            '<a href="technologies.html">Comprendre l\'IA</a>' +
             '<a href="contact.html">Contact</a>' +
           '</div>' +
           '<div class="footer-col"><h4>Démarrer</h4>' +

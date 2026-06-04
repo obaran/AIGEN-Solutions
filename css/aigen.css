@@ -216,12 +216,20 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;font-weight:600;letter-spacing:-.025
 
 /* ---------- Responsive ---------- */
 @media(max-width:1040px){
-  .nav{position:fixed;inset:66px 0 auto 0;flex-direction:column;background:color-mix(in srgb,var(--bg) 97%,transparent);
-    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:26px 32px 34px;gap:20px;align-items:flex-start;
-    border-bottom:1px solid var(--line);transform:translateY(-135%);transition:transform .45s var(--ease)}
-  .nav.open{transform:translateY(0)}
-  .nav .nav-cta{margin-top:6px}
-  .menu-toggle{display:flex}
+  /* Nav mobile : liens toujours visibles (pills défilables) au lieu du menu burger caché */
+  .site-header .bar{flex-wrap:wrap;height:auto;min-height:58px;padding:9px 0;row-gap:4px}
+  .site-header.scrolled .bar{height:auto}
+  .brand{order:1}
+  .nav-tools{order:2}
+  .nav{order:3;width:100%;flex-direction:row;align-items:center;gap:8px;margin:0;
+    overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 0}
+  .nav::-webkit-scrollbar{display:none}
+  .nav a.lnk{flex:none;white-space:nowrap;font-size:13.5px;padding:7px 14px;border-radius:999px;
+    background:var(--card-grad-a);border:1px solid var(--line);color:var(--fg-soft)}
+  .nav a.lnk::after{display:none}
+  .nav a.lnk:hover,.nav a.lnk.active{color:var(--accent-bright);border-color:var(--accent)}
+  .nav .nav-cta{display:none}
+  .menu-toggle{display:none}
 }
 @media(max-width:980px){
   .footer-top{grid-template-columns:1fr 1fr;gap:36px}

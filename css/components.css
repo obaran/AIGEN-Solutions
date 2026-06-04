@@ -277,3 +277,18 @@
   .hero-cta .btn{width:100%;justify-content:center}
   .trust-logos{gap:28px}
 }
+
+/* ---------- Bandeau cookies (minimaliste) ---------- */
+.cookie-bar{position:fixed;left:20px;bottom:20px;z-index:1200;width:min(380px,calc(100% - 40px));
+  background:var(--surface-2);border:1px solid var(--line-2);border-radius:14px;padding:15px 16px;
+  box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:11px;
+  transform:translateY(18px);opacity:0;transition:transform .4s var(--ease),opacity .4s}
+.cookie-bar.in{transform:none;opacity:1}
+.cookie-bar p{margin:0;font-size:13.5px;line-height:1.5;color:var(--fg-soft)}
+.cookie-bar a{color:var(--accent-bright);text-decoration:underline}
+.cookie-actions{display:flex;gap:9px;justify-content:flex-end}
+.cookie-bar button{font-family:'Outfit',sans-serif;font-weight:600;font-size:13px;padding:8px 17px;border-radius:9px;cursor:pointer;border:1px solid transparent;transition:.25s}
+.cookie-refuse{background:transparent;border-color:var(--line-2);color:var(--fg-soft)}
+.cookie-refuse:hover{color:var(--fg);border-color:var(--accent)}
+.cookie-accept{background:var(--accent);color:var(--on-accent)}
+.cookie-accept:hover{background:var(--accent-bright)}

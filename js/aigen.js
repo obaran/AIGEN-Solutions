@@ -285,6 +285,7 @@
           if (o.ok && o.j && o.j.success) {
             form.reset();
             if (ok) { ok.classList.add('show'); setTimeout(function () { ok.classList.remove('show'); }, 8000); }
+            if (window.AIGENConsent) AIGENConsent.track('generate_lead', { method: 'formulaire' });
           } else { throw new Error('fail'); }
         })
         .catch(function () { mailtoFallback(fd); })
@@ -305,6 +306,8 @@
     tilt();
     lightbox();
     contactForm();
+    var bookBtn = document.querySelector('[data-booking]');
+    if (bookBtn) bookBtn.addEventListener('click', function () { if (window.AIGENConsent) AIGENConsent.track('book_appointment'); });
     if (window.AIGENFX) window.AIGENFX.start();
     if (window.AIGENHeroCore) window.AIGENHeroCore.start();
 

@@ -10,6 +10,7 @@
 .hero-cta{display:flex;gap:15px;flex-wrap:wrap;margin-bottom:42px}
 .hero-trust{display:flex;align-items:center;gap:20px;color:var(--fg-dim);font-size:14px;flex-wrap:wrap}
 .hero-trust .dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.hero-slogan{font-family:'Outfit',sans-serif;font-weight:600;font-size:15px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent-bright);margin:-10px 0 30px}
 
 /* ---------- PRODUCTIVITY BAND ---------- */
 .prod{position:relative;border-radius:26px;overflow:hidden;border:1px solid var(--line-2);

@@ -175,6 +175,7 @@ h1,h2,h3,h4{font-family:'Outfit',sans-serif;font-weight:600;letter-spacing:-.025
 .site-footer{border-top:1px solid var(--line);padding:72px 0 38px;margin-top:40px;background:var(--bg-2)}
 .footer-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.1fr;gap:40px;margin-bottom:52px}
 .footer-brand p{color:var(--fg-soft);font-size:15px;margin:18px 0 22px;max-width:34ch}
+.footer-brand .footer-slogan{font-family:'Outfit',sans-serif;font-weight:600;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-bright);margin:16px 0 0;max-width:none}
 .footer-social{display:flex;gap:10px}
 .footer-social a{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;color:var(--fg-soft);transition:.3s}
 .footer-social a:hover{color:var(--accent-bright);border-color:var(--accent);transform:translateY(-3px)}

@@ -60,6 +60,7 @@
         '<div class="footer-top">' +
           '<div class="footer-brand">' +
             '<a href="index.html" class="brand" aria-label="AIGEN Solutions">' + window.AIGENLogo.brandLockup({ size: 42, tag: false }) + '</a>' +
+            '<p class="footer-slogan">Imaginer&nbsp;·&nbsp;Concevoir&nbsp;·&nbsp;Libérer</p>' +
             '<p>Nous concevons des outils d\'intelligence artificielle sur-mesure pour les entreprises qui veulent automatiser le concret.</p>' +
             '<div class="footer-social">' +
               '<a href="mailto:contact@aigen-solutions.fr" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg></a>' +

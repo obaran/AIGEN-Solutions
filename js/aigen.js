@@ -321,10 +321,10 @@
       var brand = document.querySelector('.brand');
       var staticMark = brand && brand.querySelector('.ag-mark');
       if (brand && staticMark) {
-        staticMark.style.visibility = 'hidden';
+        staticMark.style.display = 'none';
         brand.insertAdjacentHTML('afterbegin', window.AIGENLogo.markAnimSVG(40, 3.6));
         var bootMark = brand.querySelector('.ag-mark');
-        setTimeout(function () { if (bootMark) bootMark.remove(); staticMark.style.visibility = ''; }, 3800);
+        setTimeout(function () { if (bootMark) bootMark.remove(); staticMark.style.display = ''; }, 3800);
       }
     }
   }

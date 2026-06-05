@@ -5,7 +5,6 @@
   'use strict';
 
   var PAGES = [
-    { href: 'index.html', label: 'Accueil', key: 'accueil' },
     { href: 'solutions.html', label: 'Solutions', key: 'solutions' },
     { href: 'realisations.html', label: 'Réalisations', key: 'realisations' },
     { href: 'technologies.html', label: 'Comprendre l\'IA', key: 'technologies' },

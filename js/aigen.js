@@ -68,7 +68,7 @@
           '</div>' +
           '<div class="footer-col"><h4>Solutions</h4>' +
             '<a href="solutions.html">Applications métier</a>' +
-            '<a href="solutions.html">Agents IA &amp; PME</a>' +
+            '<a href="solutions.html">Agents IA &amp; automatisation</a>' +
             '<a href="solutions.html">Extraction de données</a>' +
             '<a href="solutions.html">Secteurs réglementés</a>' +
           '</div>' +

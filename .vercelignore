@@ -2,3 +2,8 @@
 .DS_Store
 .thumbnail
 logo.md
+# Le backend de l'agent vocal vit sur Railway, pas sur Vercel
+server/
+node_modules
+.env
+.env.*

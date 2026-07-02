@@ -1,0 +1,14 @@
+{
+  "name": "aigen-voice-backend",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Relais WebSocket pour l'agent vocal Gemini Live d'AIGEN Solutions. Déployé sur Railway. La clé Google reste côté serveur ; endpoint Gemini standard (fiable).",
+  "main": "index.js",
+  "scripts": { "start": "node index.js" },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@google/genai": "^2.10.0",
+    "ws": "^8.18.0"
+  }
+}

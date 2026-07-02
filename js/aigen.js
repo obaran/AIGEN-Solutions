@@ -129,6 +129,7 @@
 
   /* ---------- Reveal ---------- */
   function reveal() {
+    if (document.body.classList.contains('scenes-mode')) return; // accueil cinématique : géré par cinematic.js
     var els = document.querySelectorAll('.reveal');
     if (!('IntersectionObserver' in window) || !els.length) {
       els.forEach(function (el) { el.classList.add('in'); }); return;
@@ -175,10 +176,18 @@
       var q = item.querySelector('.faq-q');
       var a = item.querySelector('.faq-a');
       if (!q || !a) return;
-      q.addEventListener('click', function () {
+      q.setAttribute('role', 'button');
+      q.setAttribute('tabindex', '0');
+      q.setAttribute('aria-expanded', 'false');
+      var toggle = function () {
         var open = item.classList.contains('open');
         item.classList.toggle('open');
         a.style.maxHeight = open ? '0' : a.scrollHeight + 'px';
+        q.setAttribute('aria-expanded', open ? 'false' : 'true');
+      };
+      q.addEventListener('click', toggle);
+      q.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
       });
     });
   }

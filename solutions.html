@@ -19,22 +19,25 @@
 <meta name="twitter:title" content="Solutions IA sur-mesure · AIGEN Solutions">
 <meta name="twitter:description" content="Applications métier, extraction de données, agents IA et automatisation : découvrez les solutions d&#x27;intelligence artificielle sur-mesure d&#x27;AIGEN Solutions.">
 <meta name="twitter:image" content="https://aigen-solutions.fr/assets/img/og.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" href="assets/fonts/QGYvz_MVcBeNP4NJtEtqUYLknw.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/fonts.css">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="theme-color" content="#080A0F">
 <link rel="stylesheet" href="css/aigen.css">
 <link rel="stylesheet" href="css/components.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://aigen-solutions.fr/"},{"@type":"ListItem","position":2,"name":"Solutions","item":"https://aigen-solutions.fr/solutions.html"}]}
+</script>
 <script src="js/logo.js"></script>
 </head>
 <body data-page="solutions">
+<a href="#main" class="skip-link">Aller au contenu</a>
 <div class="bg-ambient"></div>
 <div class="bg-grid"></div>
 
 <header class="site-header" data-header></header>
 
-<main>
+<main id="main">
 
 <!-- ===== PAGE HERO ===== -->
 <section class="page-hero">
@@ -64,7 +67,7 @@
         <a href="contact.html" class="btn btn-primary magnetic">Discuter de mon besoin</a>
       </div>
       <div class="split-visual">
-        <img src="assets/img/mediatrad.png" alt="Application métier MediaTrad">
+        <img src="assets/img/mediatrad.png" alt="Application métier MediaTrad" loading="lazy" decoding="async">
       </div>
     </div>
   </div>
@@ -86,7 +89,7 @@
         <a href="realisations.html" class="btn btn-ghost">Voir HPI Extraction</a>
       </div>
       <div class="split-visual">
-        <img src="assets/img/hpi-cover.svg" alt="HPI Extraction, extraction de surfaces BTP">
+        <img src="assets/img/hpi-cover.svg" alt="HPI Extraction, extraction de surfaces BTP" loading="lazy" decoding="async">
       </div>
     </div>
   </div>
@@ -108,7 +111,7 @@
         <a href="contact.html" class="btn btn-primary magnetic">Automatiser un process</a>
       </div>
       <div class="split-visual">
-        <img src="assets/img/agent-vocal.svg" alt="Agent vocal IA">
+        <img src="assets/img/agent-vocal.svg" alt="Agent vocal IA" loading="lazy" decoding="async">
       </div>
     </div>
   </div>
@@ -146,7 +149,7 @@
       <article class="sol-card reveal" data-delay="70" data-tilt>
         <div class="sol-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
         <h3>Entreprises de toutes tailles</h3>
-        <p>De l'artisan au grand groupe : automatisation commerciale, devis et factures, agents d'accueil. L'IA s'adapte à votre structure, avec l'agilité qu'apprécient les PME.</p>
+        <p>De l'artisan au grand groupe : automatisation commerciale, devis et factures, agents d'accueil. L'IA s'adapte à votre structure, quelle que soit votre taille, avec l'agilité d'une équipe réactive.</p>
       </article>
       <article class="sol-card reveal" data-delay="140" data-tilt>
         <div class="sol-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></div>
@@ -161,7 +164,7 @@
 <section class="section tight">
   <div class="container">
     <div class="cta-band cta-photo reveal">
-      <img class="cta-art" src="assets/img/cta-2.jpg" alt="">
+      <img class="cta-art" src="assets/img/cta-2.jpg" alt="" loading="lazy" decoding="async">
       <h2>Une tâche qui vous coûte trop de temps ?</h2>
       <p class="lead">Décrivez-la nous. On vous dit en 30 minutes si l'IA peut la prendre en charge.</p>
       <div class="hero-cta">
@@ -178,5 +181,6 @@
 <script src="js/fx.js"></script>
 <script src="js/consent.js"></script>
 <script src="js/aigen.js"></script>
+<script type="module" src="js/voice-agent.js"></script>
 </body>
 </html>

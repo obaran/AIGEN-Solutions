@@ -4,3 +4,6 @@
 node_modules/
 .vercel
 *.log
+
+# Variables d'environnement (secrets : jamais committees)
+.env*

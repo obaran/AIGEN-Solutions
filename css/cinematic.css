@@ -1,0 +1,80 @@
+/* ============================================================
+   AIGEN — Mode cinématique (accueil plein écran)
+   Chaque scène occupe le viewport. Le passage d'une scène à
+   l'autre se fait par DISSOLUTION (fondu + profondeur + flou),
+   sans défilement vertical : la scène courante disparaît,
+   la suivante apparaît devant. Actif uniquement sur grand
+   écran + pointeur fin + motion autorisée (sinon défilement
+   classique, voir js/cinematic.js).
+   Toutes les règles de mise en page sont scopées à
+   body.scenes-mode pour ne rien changer en mode normal.
+   ============================================================ */
+
+body.scenes-mode{overflow:hidden;height:100vh;height:100dvh}
+body.scenes-mode main#main{position:fixed;inset:0;z-index:1}
+
+.scenes-mode .scene{position:fixed;inset:0;opacity:0;visibility:hidden;pointer-events:none;
+  transform:scale(.965);filter:blur(7px);
+  transition:opacity .6s var(--ease-out),transform .85s var(--ease-out),filter .6s var(--ease-out),visibility 0s linear .68s}
+.scenes-mode .scene.is-active{opacity:1;visibility:visible;pointer-events:auto;transform:none;filter:none;z-index:2;
+  transition:opacity .6s var(--ease-out),transform .85s var(--ease-out),filter .6s var(--ease-out),visibility 0s}
+.scenes-mode .scene.is-leaving{opacity:0;visibility:visible;transform:scale(1.05);filter:blur(7px);z-index:1}
+
+.scenes-mode .scene-inner{position:absolute;inset:0;width:100%;overflow-y:auto;overflow-x:hidden;
+  display:flex;flex-direction:column;justify-content:safe center;
+  padding:104px 0 58px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.scenes-mode .scene-inner::-webkit-scrollbar{display:none}
+/* on neutralise les paddings verticaux des sections : la scène centre déjà */
+.scenes-mode .scene-inner .section,
+.scenes-mode .scene-inner .hero,
+.scenes-mode .scene-inner .page-hero{padding-top:0;padding-bottom:0}
+.scenes-mode .scene-inner .trust{margin-top:36px;border:0}
+.scenes-mode .scene-inner .site-footer{margin-top:64px}
+
+/* Apparition staggerée du contenu à chaque activation de scène */
+.scenes-mode .scene .reveal{opacity:0;transform:translateY(30px)}
+.scenes-mode .scene.is-active .reveal.in{opacity:1;transform:none;
+  transition:opacity .7s var(--ease-out),transform .75s var(--ease-out)}
+
+/* ---- Points de navigation latéraux ---- */
+.scene-nav{position:fixed;right:26px;top:50%;transform:translateY(-50%);z-index:95;
+  display:flex;flex-direction:column;gap:15px;align-items:center}
+.scene-nav button{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--line-2);background:transparent;
+  cursor:pointer;padding:0;position:relative;transition:transform .3s var(--ease-out),border-color .3s,background .3s}
+.scene-nav button::after{content:attr(data-label);position:absolute;right:22px;top:50%;
+  transform:translateY(-50%) translateX(8px);white-space:nowrap;font-family:'Outfit',sans-serif;font-weight:500;font-size:12px;
+  color:var(--fg);background:color-mix(in srgb,var(--surface) 84%,transparent);border:1px solid var(--line);border-radius:8px;
+  padding:5px 11px;opacity:0;pointer-events:none;transition:.3s;backdrop-filter:blur(10px);box-shadow:var(--shadow)}
+.scene-nav button:hover{border-color:var(--accent);transform:scale(1.3)}
+.scene-nav button:hover::after{opacity:1;transform:translateY(-50%) translateX(0)}
+.scene-nav button.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px var(--glow)}
+.scene-nav button.on::after{color:var(--accent-bright)}
+
+/* ---- Indice « défiler » (1re scène) ---- */
+.scene-hint{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:95;
+  display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--fg-dim);
+  font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  transition:opacity .5s;pointer-events:none}
+.scene-hint.gone{opacity:0}
+.scene-hint .wheel{width:24px;height:38px;border:1.5px solid var(--line-2);border-radius:12px;position:relative}
+.scene-hint .wheel::before{content:'';position:absolute;left:50%;top:7px;width:3px;height:7px;border-radius:2px;
+  background:var(--accent-bright);transform:translateX(-50%);animation:wheelDot 1.9s var(--ease) infinite}
+@keyframes wheelDot{0%{opacity:0;transform:translate(-50%,0)}25%{opacity:1}55%{opacity:1;transform:translate(-50%,9px)}100%{opacity:0;transform:translate(-50%,13px)}}
+
+/* ---- Compteur de progression ---- */
+.scene-count{position:fixed;left:30px;bottom:26px;z-index:95;font-family:'Outfit',sans-serif;font-size:13px;color:var(--fg-dim);
+  letter-spacing:.04em}
+.scene-count b{color:var(--fg);font-size:23px;font-weight:600;letter-spacing:-.02em}
+
+/* barre de progression fine en haut */
+.scene-prog{position:fixed;top:0;left:0;height:2px;z-index:96;background:linear-gradient(90deg,var(--accent-bright),var(--accent));
+  width:0;transition:width .85s var(--ease-out);box-shadow:0 0 12px var(--glow)}
+
+.cine-flat .scene{transition:none!important;filter:none!important}
+
+@media(max-width:1024px){.scene-nav,.scene-hint,.scene-count,.scene-prog{display:none}}
+@media(prefers-reduced-motion:reduce){
+  .scenes-mode .scene{transition:opacity .25s,visibility 0s;filter:none!important;transform:none!important}
+  .scenes-mode .scene.is-leaving{filter:none;transform:none}
+  .scene-hint .wheel::before{animation:none}
+}

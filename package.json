@@ -1,0 +1,5 @@
+{
+  "name": "aigen-solutions-site",
+  "private": true,
+  "description": "Site vitrine AIGEN Solutions (front statique). Le back-end de l'agent vocal (relais WebSocket Gemini Live) est dans server/ et se déploie sur Railway. Le front reste sans build ni dépendance."
+}

@@ -67,7 +67,7 @@ AIGEN Solutions — **SAS**, siège **77 Avenue la Bruyère, 38100 Grenoble**, *
 - [ ] **GA4** : récupérer l'ID `G-XXXX` → activer suivi + bannière + maj confidentialité.
 - [ ] **Google Ads** : landing page dédiée + kit de campagne (mots-clés, annonces, ciblage).
 - [ ] **LinkedIn** : URL de la page pro → réintégrer l'icône dans le footer (`buildFooter`).
-- [ ] **Sécurité** : régénérer/restreindre la clé **Resend** ET la clé **Gemini** (toutes deux ont transité en clair). Gemini = env **Railway** ; Resend = env **Vercel**.
+- [ ] **Sécurité (rotation des clés)** : les clés **Gemini**, **Resend** et **Anthropic** ont transité en clair -> à régénérer chez le fournisseur, révoquer l'ancienne, puis restreindre (Gemini : limiter à l'API Generative Language ; Resend : scope envoi + domaine `aigen-solutions.fr`). Les 3 (+ `MAIL_FALLBACK_TO`) sont désormais en env **Railway** (backend). Rotation SÉCURISÉE sans jamais exposer la valeur : `./secure-keys.sh NOM_DE_LA_CLE` (saisie masquée -> pousse sur Railway prod + met à jour `.env` local, hors chat/historique). Dépôt vérifié propre : aucune clé dans le code ni l'historique git, `.env` gitignoré et jamais committé.
 - [x] **Agent vocal en prod** : backend déployé sur **Railway** (`aigen-voice-backend`), `GEMINI_API_KEY` posée, relais opérationnel (endpoint standard, fiable).
 - [ ] (Optionnel) nettoyer les assets orphelins : `assets/img/grandirserein.png`, `etabli.png`, `mediatrad-1.png`.
 - [x] Strip « Ils nous font confiance » : Grandir Serein + L'Établi retirés (ne reste que emlyon business school, Bioforce, Grand compte BTP).
@@ -75,17 +75,17 @@ AIGEN Solutions — **SAS**, siège **77 Avenue la Bruyère, 38100 Grenoble**, *
 ## 11. Agent vocal (front + back) + accueil cinématique
 
 ### Agent vocal : architecture navigateur ↔ backend Railway ↔ Gemini
-- **Front** (`js/voice-agent.js`) : le navigateur ouvre un **WebSocket vers le backend Railway** (`wss://aigen-voice-backend-production.up.railway.app/live` ; constante **`RAILWAY_HOST`** en haut du fichier ; bascule auto sur `ws://localhost:8787/live` en local). Il gère micro/haut-parleurs (AudioWorklet), sous-titres, orbe réactif, **formulaire de lead inséré dans le chat** (nom, email, entreprise, secteur, tél) → POST `/api/contact` (email Resend), raccrochage gracieux (l'agent finit sa phrase + ~4 s), coupure après ~80 s d'inactivité. **AUCUN SDK ni clé côté navigateur.**
-- **Back** (`server/index.js`, sur **Railway**) : relais Node (`ws` + `@google/genai`). Tient la session **Gemini Live** (voix **Charon**, FR, modèle **`gemini-3.1-flash-live-preview`**) avec la **vraie clé**, sur l'**endpoint standard** (fiable). Prompt commercial + réalisations + garde-fous (**jamais de tarif**) + outils (`recueillir_coordonnees`, `terminer_conversation`) définis ici. Filtrage d'origine + logs.
+- **Front** (`js/voice-agent.js`) : le navigateur ouvre un **WebSocket vers le backend Railway** (`wss://aigen-voice-backend-production.up.railway.app/live` ; constante **`RAILWAY_HOST`** en haut du fichier ; bascule auto sur `ws://localhost:8787/live` en local). Il gère micro/haut-parleurs (AudioWorklet), sous-titres, orbe réactif, **formulaire de lead inséré dans le chat** (nom, email, entreprise, secteur, tél, + upload doc) → POST `/lead` sur le **backend Railway** (email de confirmation Resend au visiteur + brief Fable 5 à l'équipe), raccrochage gracieux (attend la **fin réelle de la voix** + sécurité 2 s, via signal `drained` du worklet), coupure après ~80 s d'inactivité. **AUCUN SDK ni clé côté navigateur.**
+- **Back** (`server/index.js`, sur **Railway**) : relais Node (`ws` + `@google/genai`). Tient la session **Gemini Live** (voix **Charon**, FR, modèle **`gemini-3.1-flash-live-preview`**) avec la **vraie clé**, sur l'**endpoint standard** (fiable). Prompt de découverte commerciale + réalisations + garde-fous (**jamais de tarif**) + outils (`proposer_contact` {mode, synthese}, `terminer_conversation`) définis ici. Endpoint HTTP **`/lead`** (Fable 5 + emails Resend) également porté par ce serveur. Note fin de conversation : `terminer_conversation` ne renvoie **pas** de réponse d'outil (sinon le modèle lisait « conversation terminée » à voix haute). Filtrage d'origine + logs.
 - **Pourquoi ce choix** : l'ancien jeton éphémère cachait la clé mais **forçait l'endpoint `BidiGenerateContentConstrained`** (expérimental, échecs intermittents selon navigateur/extensions). Le relais backend = fiabilité (endpoint standard) + clé jamais exposée + base pour de futures fonctionnalités.
 
 ### Déploiement de l'agent vocal (Railway)
 - Projet Railway **`aigen-voice-backend`** (workspace « Onur Baran's Projects »), env **production**, domaine `aigen-voice-backend-production.up.railway.app`.
-- Env Railway : **`GEMINI_API_KEY`** (+ optionnels `LIVE_MODEL`, `ALLOWED_ORIGINS`). Le front n'a PAS besoin de la clé.
+- Env Railway : **`GEMINI_API_KEY`**, **`ANTHROPIC_API_KEY`** (brief Fable 5), **`RESEND_API_KEY`** + **`MAIL_FALLBACK_TO`** (emails via `/lead`) (+ optionnels `LIVE_MODEL`, `BRIEF_MODEL`, `ALLOWED_ORIGINS`). Le front n'a AUCUNE clé. Rotation via `./secure-keys.sh` (voir §10 Sécurité).
 - Déployer : depuis `server/`, **`railway up --detach`**. Domaine : `railway domain`. Logs : `railway logs`.
 
 ### Test local
-- Backend : depuis `server/`, `GEMINI_API_KEY=... node index.js` (port 8787). Front : `vercel dev` (port 8000, pour `/api/contact`). Le client détecte `localhost` et parle à `ws://localhost:8787`.
+- Backend : depuis `server/`, `set -a; . ../.env; set +a; node index.js` (port 8787, charge les 4 clés du `.env`). Front : `python3 -m http.server 8000` (site statique, plus de fonction Vercel `api/`). Le client détecte `localhost` et parle à `ws://localhost:8787/live` (WS) + `http://localhost:8787/lead` (formulaire).
 - Micro : contexte sécurisé (localhost/https) + en-tête **`Permissions-Policy: microphone=(self)`** dans `vercel.json`.
 
 ### Accueil cinématique

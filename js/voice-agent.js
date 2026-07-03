@@ -264,7 +264,8 @@ function mount() {
             if (agent) agent.sendFormDone(nom, email, mode);
             form.replaceWith(successBlock(mode));
             transcript.scrollTop = transcript.scrollHeight;
-          } else { btn.disabled = false; btn.textContent = "Réessayer"; note.textContent = "Échec de l'envoi. Réessayez ou écrivez-nous."; }
+          } else if (r.status === 429) { btn.disabled = false; btn.textContent = "Réessayer"; note.textContent = "Trop de demandes en peu de temps. Patientez quelques minutes."; }
+          else { btn.disabled = false; btn.textContent = "Réessayer"; note.textContent = "Échec de l'envoi. Réessayez ou écrivez-nous."; }
         })
         .catch(() => { if (agent) agent.pauseIdle(false); btn.disabled = false; btn.textContent = "Réessayer"; note.textContent = "Échec de l'envoi. Réessayez."; });
     });

@@ -209,6 +209,42 @@ async function processLead(lead) {
   await sendTeamBrief({ name, email, company, sector, tel, creneau, modeLabel, topic, message, synthese, attachments, brief });
 }
 
+/* ============ Anti-abus /lead : limiteur de débit en mémoire (instance Railway unique) ============ */
+// Protège le coût (appel Fable 5 + emails) contre le spam. Limites généreuses
+// pour ne jamais bloquer un usage légitime, même derrière une IP d'entreprise
+// partagée. Le plafond GLOBAL est le vrai garde-fou : il tient même si l'IP est
+// falsifiée via x-forwarded-for. Ne compte que les leads VALIDES (prêts à traiter).
+const RL = {
+  perIp: new Map(),
+  global: [],
+  WINDOW: 15 * 60 * 1000,   // fenêtre 15 min
+  BURST: 60 * 1000,         // fenêtre rafale 60 s
+  MAX_PER_IP: 8,            // leads / IP / 15 min
+  MAX_BURST_IP: 3,         // leads / IP / 60 s
+  MAX_GLOBAL: 80           // leads / 15 min, toutes IP confondues
+};
+function clientIp(req) {
+  const xf = (req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  return xf || req.headers['x-real-ip'] || (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+function rateLimited(ip) {
+  const now = Date.now();
+  RL.global = RL.global.filter((t) => now - t < RL.WINDOW);
+  if (RL.global.length >= RL.MAX_GLOBAL) return 'global';
+  const arr = (RL.perIp.get(ip) || []).filter((t) => now - t < RL.WINDOW);
+  if (arr.length >= RL.MAX_PER_IP) { RL.perIp.set(ip, arr); return 'ip'; }
+  if (arr.filter((t) => now - t < RL.BURST).length >= RL.MAX_BURST_IP) { RL.perIp.set(ip, arr); return 'burst'; }
+  arr.push(now); RL.perIp.set(ip, arr); RL.global.push(now);
+  return null;
+}
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, arr] of RL.perIp) {
+    const keep = arr.filter((t) => now - t < RL.WINDOW);
+    if (keep.length) RL.perIp.set(ip, keep); else RL.perIp.delete(ip);
+  }
+}, RL.WINDOW).unref();
+
 function cors(req, res) {
   const o = req.headers.origin || '';
   if (ALLOWED.indexOf(o) > -1) {
@@ -234,6 +270,8 @@ const server = http.createServer(async (req, res) => {
     if (lead.botcheck) { res.writeHead(200, { 'content-type': 'application/json' }); res.end('{"success":true}'); return; }
     const name = String(lead.name || '').trim(), email = String(lead.email || '').trim();
     if (!name || !/.+@.+\..+/.test(email)) { res.writeHead(400, { 'content-type': 'application/json' }); res.end('{"error":"invalid"}'); return; }
+    const limited = rateLimited(clientIp(req));
+    if (limited) { log('lead rate-limit', limited, clientIp(req)); res.writeHead(429, { 'content-type': 'application/json' }); res.end('{"error":"rate_limited"}'); return; }
     res.writeHead(200, { 'content-type': 'application/json' }); res.end('{"success":true}'); // réponse rapide au client
     processLead(lead).catch((e) => log('processLead err', e && e.message)); // async (Railway reste actif)
     return;

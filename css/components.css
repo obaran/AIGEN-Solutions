@@ -507,6 +507,30 @@
 .va-form button:disabled{opacity:.6;cursor:default;transform:none}
 .va-form-note{font-size:11.5px;color:#F2999B;min-height:0}
 .va-form-ok{font-size:13.5px;color:var(--accent-bright);line-height:1.5;font-weight:500}
+/* upload de document dans le formulaire */
+.va-file{display:flex;align-items:center;cursor:pointer;padding:9px 12px;border:1px dashed var(--line-2);border-radius:10px;
+  font-family:'Inter',sans-serif;font-size:12.5px;color:var(--fg-dim);transition:.2s;background:var(--surface)}
+.va-file:hover{border-color:var(--accent);color:var(--accent-bright)}
+.va-file-lab{pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* carte de réservation (visio) */
+.va-booking{margin-top:8px;padding:14px 15px;border-radius:12px;border:1px solid var(--accent);
+  background:linear-gradient(140deg,color-mix(in srgb,var(--accent) 16%,transparent),transparent),var(--surface-2)}
+.va-booking-h{display:flex;align-items:center;gap:9px;font-family:'Outfit',sans-serif;font-weight:600;font-size:14px;color:var(--fg);margin-bottom:5px}
+.va-booking-h svg{width:18px;height:18px;color:var(--accent-bright);flex:none}
+.va-booking p{font-size:12.8px;color:var(--fg-soft);margin:0 0 11px;line-height:1.5}
+.va-booking-btn{display:inline-flex;align-items:center;justify-content:center;width:100%;padding:11px;border-radius:10px;
+  font-family:'Outfit',sans-serif;font-weight:600;font-size:14px;background:linear-gradient(180deg,var(--accent-bright),var(--accent));
+  color:var(--on-accent);box-shadow:0 8px 22px -8px var(--glow);transition:transform .2s var(--ease-out)}
+.va-booking-btn:hover{transform:translateY(-2px)}
+/* choix de reprise (visiteur de retour) */
+.va-resume{align-self:stretch;text-align:center;padding:14px 8px}
+.va-resume p{font-size:14.5px;color:var(--fg-soft);line-height:1.55;margin:0 0 16px}
+.va-resume-btns{display:flex;flex-direction:column;gap:10px}
+.va-resume-btns button{padding:12px;border-radius:var(--r-pill);border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:14px;
+  background:linear-gradient(180deg,var(--accent-bright),var(--accent));color:var(--on-accent);transition:transform .2s var(--ease-out)}
+.va-resume-btns button:hover{transform:translateY(-2px)}
+.va-resume-btns button.ghost{background:var(--card-grad-a);border:1px solid var(--line-2);color:var(--fg-soft)}
+.va-resume-btns button.ghost:hover{border-color:var(--accent);color:var(--fg)}
 @media (prefers-reduced-motion: reduce){
   .va-launch,.va-panel,.va-start{transition:none}
   .va-launch .va-dot,.va-orb span,.va-orb::after{animation:none;transition:none}

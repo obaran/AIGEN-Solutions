@@ -1,17 +1,17 @@
 // File de lecture PCM (Float32 @ 24 kHz) reçue du thread principal.
 // "interrupt" vide la file (barge-in : l'utilisateur coupe la parole).
+// Signale "drained" quand la voix a FINI de jouer (file vidée après audio),
+// pour que le client ne raccroche pas avant la fin de la phrase.
 class PCMProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
     this.audioQueue = [];
     this.currentOffset = 0;
+    this.had = false;      // a reçu de l'audio à jouer
+    this.notified = false; // "drained" déjà signalé pour ce silence
     this.port.onmessage = (event) => {
-      if (event.data === "interrupt") {
-        this.audioQueue = [];
-        this.currentOffset = 0;
-      } else if (event.data instanceof Float32Array) {
-        this.audioQueue.push(event.data);
-      }
+      if (event.data === "interrupt") { this.audioQueue = []; this.currentOffset = 0; this.had = false; this.notified = true; }
+      else if (event.data instanceof Float32Array) { this.audioQueue.push(event.data); this.had = true; this.notified = false; }
     };
   }
   process(inputs, outputs) {
@@ -27,6 +27,8 @@ class PCMProcessor extends AudioWorkletProcessor {
       if (this.currentOffset >= buf.length) { this.audioQueue.shift(); this.currentOffset = 0; }
     }
     while (outIdx < channel.length) channel[outIdx++] = 0; // silence
+    // la voix vient de finir de jouer (file vidée après avoir eu de l'audio)
+    if (this.audioQueue.length === 0 && this.had && !this.notified) { this.notified = true; this.port.postMessage("drained"); }
     return true;
   }
 }

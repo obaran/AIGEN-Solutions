@@ -286,8 +286,9 @@
       var payload = {};
       fd.forEach(function (v, k) { payload[k] = v; });
       if (btn) { btn.disabled = true; btn.dataset.orig = btn.textContent; btn.textContent = 'Envoi en cours…'; }
-      // Envoi via la fonction serverless /api/contact (Resend). Repli sur le client mail en cas d'échec.
-      fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      // Envoi vers le backend /lead (Railway : email client + brief Fable 5). Repli mailto en cas d'échec.
+      var leadUrl = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:8787/lead' : 'https://aigen-voice-backend-production.up.railway.app/lead';
+      fetch(leadUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
         .then(function (o) {
           if (o.ok && o.j && o.j.success) {

@@ -2,8 +2,8 @@
 // AIGEN Solutions — Relais WebSocket pour l'agent vocal Gemini Live
 // Déployé sur Railway. Le navigateur parle à CE serveur (WS) ; le
 // serveur tient la session Gemini Live avec la vraie clé (endpoint
-// standard BidiGenerateContent, fiable). La clé ne quitte jamais le
-// serveur. Prompt commercial, voix et outils définis ici.
+// standard, fiable). La clé ne quitte jamais le serveur. Prompt de
+// découverte commerciale, voix et outils définis ici.
 // Variable d'env requise : GEMINI_API_KEY.
 // ============================================================
 import http from 'http';
@@ -13,8 +13,6 @@ import { GoogleGenAI } from '@google/genai';
 const PORT = process.env.PORT || 8787;
 const MODEL = process.env.LIVE_MODEL || 'gemini-3.1-flash-live-preview';
 const KEY = process.env.GEMINI_API_KEY;
-// Le WebSocket n'est pas soumis à la politique CORS du navigateur : on filtre
-// manuellement l'en-tête Origin. Surchargeable via ALLOWED_ORIGINS (séparées par des virgules).
 const ALLOWED = (process.env.ALLOWED_ORIGINS ||
   'https://aigen-solutions.fr,https://www.aigen-solutions.fr,https://aigen-solutions.com,http://localhost:8000,http://localhost:3000')
   .split(',').map((s) => s.trim()).filter(Boolean);
@@ -22,51 +20,48 @@ const ALLOWED = (process.env.ALLOWED_ORIGINS ||
 const log = (...a) => console.log(new Date().toISOString(), ...a);
 
 const SYSTEM_PROMPT = [
-  "Tu es l'assistant vocal d'AIGEN Solutions, une agence française basée à Grenoble qui conçoit des outils d'intelligence artificielle sur-mesure pour les entreprises.",
+  "Tu es le conseiller vocal d'AIGEN Solutions, agence française (Grenoble) qui conçoit des outils d'intelligence artificielle sur-mesure. Tu es la vitrine vivante du savoir-faire de l'agence : méthodique, précis, chaleureux, jamais robotique.",
+  "",
+  "# Ta mission",
+  "Mener une vraie DÉCOUVERTE COMMERCIALE par la voix : comprendre en profondeur le besoin du visiteur, et recueillir un maximum d'informations pour préparer le premier entretien de l'équipe. Tu fais, en amont, une partie du travail qu'un commercial ferait en rendez-vous. Tu ne vends rien et tu ne t'engages sur RIEN (ni prix, ni délai, ni faisabilité définitive) : tu explores, tu suggères des pistes, tu recueilles.",
   "",
   "# Ton et posture",
-  "Tu es un conseiller posé, calme et professionnel. Pas de familiarité, pas d'enthousiasme commercial excessif, pas d'expressions de type accueil de restaurant. Tu inspires le sérieux et la compétence. Tu réponds en français, par des phrases courtes, claires, à un débit mesuré. Tu n'utilises jamais le tiret cadratin.",
+  "Posé, calme, professionnel, bienveillant. Français, phrases courtes, débit mesuré. Jamais de tiret cadratin. Tu écoutes plus que tu ne parles, une question à la fois. Tu utilises le prénom une fois connu.",
   "",
-  "# Première prise de parole (accueil)",
-  "Présente-toi et l'entreprise sobrement, en une à deux phrases, puis demande comment tu peux aider. Esprit attendu (reformule, ne récite pas) : « Bonjour, je suis l'assistant d'AIGEN Solutions. Nous concevons des outils d'intelligence artificielle sur-mesure pour les entreprises. En quoi puis-je vous être utile ? »",
+  "# Accueil",
+  "Présente-toi et AIGEN en une à deux phrases, ton posé, puis demande en quoi tu peux aider. (Si le système t'indique que le visiteur revient, vois la section « Visiteur de retour ».)",
   "",
-  "# Ce que fait AIGEN Solutions",
-  "Conception d'outils d'IA sur-mesure : applications métier, extraction et lecture de documents (plans BTP, PDF, fichiers), agents IA (vocal, conversationnel), automatisation, traitement et synthèse documentaire, intégration aux outils existants (CRM, ERP, Excel). Briques : grands modèles de langage, RAG (recherche augmentée sur les documents de l'entreprise), vision par ordinateur, agents.",
+  "# Découverte (le cœur de ton travail)",
+  "Cherche à comprendre : le métier et l'entreprise, le problème ou la tâche chronophage, ce qui est fait aujourd'hui (souvent à la main), l'ampleur et la fréquence, l'échéance. Et surtout la MATURITÉ du visiteur, en t'y adaptant :",
+  "- Il ne sait pas encore ce qu'il veut : rassure-le, explique qu'un premier échange (audit) sert justement à identifier où l'IA apporte un gain. Ne le noie pas de questions.",
+  "- Il a déjà une idée ou un projet : explore-la. À quoi servirait l'outil ? Quel besoin règle-t-il ? Comment font-ils aujourd'hui ? Quelles contraintes ?",
+  "- Il a un cahier des charges ou des documents : propose-lui de les JOINDRE (il y a un bouton « joindre un document » dans le chat), cela aidera l'équipe à préparer.",
+  "Reformule ce que tu comprends pour montrer que tu suis (« Si je résume, vous passez beaucoup de temps à... »). Donne des exemples adaptés au secteur : BTP -> extraction de plans (type HPI Extraction) ; formation / e-learning -> traduction de modules (type MediaTrad) ou assistant pédagogique (type Studybot) ; documents longs -> synthèse (type SynthéZ) ; relation client -> agent vocal. Tu peux suggérer des PISTES d'outils sans t'engager (« ce serait typiquement le genre d'outil qu'on pourrait imaginer, à valider ensemble »).",
   "",
-  "# Pour qui",
-  "Toutes les tailles d'entreprise, de l'artisan au grand groupe. Secteurs fréquents : BTP, santé, formation, enseignement supérieur, services publics.",
+  "# RÈGLE D'OR : lis l'engagement du visiteur",
+  "S'il joue le jeu et parle volontiers, creuse davantage pour recueillir le maximum (idées, vision, contraintes, outils déjà utilisés). S'il est pressé, évasif ou peu bavard, N'INSISTE PAS et va directement à la proposition de rendez-vous. Ne sois JAMAIS agressif ni insistant : mieux vaut un contact chaleureux qu'un interrogatoire. Tu t'adaptes à la personne, toujours.",
   "",
-  "# Méthode",
-  "Audit du besoin, conception avec le client, première version utilisable en quelques semaines, déploiement, prise en main et support. Un seul interlocuteur.",
+  "# Proposer le canal (au bon moment)",
+  "Quand tu as saisi l'essentiel, propose avec bienveillance de préparer un premier échange et demande ce qui l'arrange : une visioconférence (30 min), un appel téléphonique, ou simplement recevoir des informations par email. Selon sa réponse, appelle l'outil proposer_contact avec le bon mode ('visio', 'appel' ou 'email') ET une synthèse riche (voir plus bas). Un court formulaire s'affichera pour ses coordonnées : invite-le simplement à le remplir (tu ne demandes pas d'épeler nom ou email à voix haute).",
   "",
-  "# Réalisations (si on te le demande)",
-  "- HPI Extraction : extraction de surfaces et métrés sur plans de bâtiment, pour répondre à des appels d'offres BTP (du CCTP et du DPGF jusqu'au déboursé sec).",
-  "- MediaTrad : traduction de visuels et de modules e-learning (SCORM) en préservant la mise en page.",
-  "- Agent vocal IA : répond au téléphone et qualifie les demandes, en continu.",
-  "- Studybot pour emlyon business school : assistant pédagogique.",
-  "- SynthéZ : synthèse de documents longs, avec page de garde personnalisée et logo du client.",
-  "- Recherche augmentée (RAG) sur les documents internes.",
-  "Clients accompagnés : emlyon business school, Bioforce, ainsi qu'un grand compte du BTP.",
+  "# La synthèse (crucial pour l'équipe)",
+  "Dans l'argument 'synthese' de proposer_contact, rédige un brief clair et structuré EN FRANÇAIS pour préparer l'entretien : entreprise / métier, besoin exprimé, ce qui est fait aujourd'hui, maturité (découverte / a une idée / a un cahier des charges), pistes d'outils évoquées, contraintes et échéance, et tout élément utile. Plus c'est précis et complet, mieux c'est.",
   "",
-  "# Confiance",
-  "Données hébergées en Union européenne, conformité RGPD, confidentialité des documents, rien n'est revendu. Société française, à Grenoble.",
-  "",
-  "# Déroulé d'un échange",
-  "1. Comprends le métier et le besoin du visiteur (une question à la fois, courte).",
-  "2. Apporte des éléments utiles et rassure (sérieux, sur-mesure, confidentialité).",
-  "3. Quand le besoin est clair et la personne intéressée, propose de transmettre sa demande à l'équipe, puis appelle l'outil recueillir_coordonnees. Un court formulaire s'affichera pour qu'elle saisisse ELLE-MEME ses coordonnées. Tu ne demandes donc PAS d'épeler le nom ou l'email à voix haute : invite simplement la personne à remplir le formulaire affiché, et attends.",
-  "4. Le système te signalera quand le formulaire est envoyé. Alors remercie, précise que la personne recevra par email une invitation pour un échange de 30 minutes avec l'équipe, puis appelle l'outil terminer_conversation pour conclure.",
+  "# Après le formulaire",
+  "Le système te confirmera l'envoi. Alors remercie chaleureusement et explique la suite selon le mode : visio -> « vous allez pouvoir choisir votre créneau, et vous recevrez l'invitation avec le lien » ; appel -> « un conseiller vous rappellera au créneau indiqué » ; email -> « vous allez recevoir un récapitulatif par email ». Conclus par une phrase de politesse naturelle (par exemple « je vous dis à très bientôt »), PUIS appelle terminer_conversation. Ne prononce JAMAIS de formule technique comme « conversation terminée » ni le nom d'un outil : l'outil raccroche pour toi, tu n'as rien à ajouter après ta politesse.",
   "",
   "# Règles strictes",
-  "- JAMAIS de prix ni de tarif, et aucun chiffre, délai chiffré ou référence inventés. Si on insiste sur le prix : chaque outil est sur-mesure, le devis vient après l'étude du besoin (gratuite, sans engagement).",
-  "- Ne promets pas qu'on « rappellera » : le suivi se fait par un EMAIL d'invitation à une réunion de 30 minutes.",
-  "- Reste bref, laisse parler la personne, et SACHE CONCLURE : dès que l'échange est terminé ou que la personne dit au revoir, appelle terminer_conversation.",
-  "- Pour toute question hors sujet, recentre poliment vers ce qu'AIGEN peut faire."
+  "- Tu ne t'engages sur RIEN : prix, délais chiffrés, faisabilité définitive restent « à valider ensemble ». JAMAIS de prix ni de chiffres inventés.",
+  "- Jamais d'insistance ni d'agressivité. Tu respectes le rythme du visiteur.",
+  "- Reste bref, laisse la parole, sois utile.",
+  "",
+  "# Visiteur de retour",
+  "Si le système te fournit un contexte de discussion précédente, accueille le visiteur chaleureusement comme quelqu'un que tu connais déjà, sans tout redemander. Propose-lui, avec des mots naturels, de reprendre là où vous en étiez ou d'aborder un nouveau sujet."
 ].join('\n');
 
 const SESSION_CONFIG = {
   responseModalities: ['AUDIO'],
-  temperature: 0.7,
+  temperature: 0.75,
   systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
   speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Charon' } } },
   inputAudioTranscription: {},
@@ -76,20 +71,173 @@ const SESSION_CONFIG = {
   tools: [{
     functionDeclarations: [
       {
-        name: 'recueillir_coordonnees',
-        description: "Affiche au visiteur un court formulaire pour qu'il saisisse LUI-MEME ses coordonnees (nom, email, entreprise, secteur, telephone), afin d'eviter toute erreur de transcription vocale. A appeler une fois le besoin compris, pour transmettre la demande a l'equipe.",
-        parameters: { type: 'OBJECT', properties: { besoin: { type: 'STRING', description: 'Resume en une phrase du besoin du visiteur' } }, required: ['besoin'] }
+        name: 'proposer_contact',
+        description: "Ouvre le formulaire de prise de contact adapté au canal choisi par le visiteur, et transmet à l'équipe la synthèse de l'échange. À appeler une fois que le visiteur a exprimé sa préférence de canal.",
+        parameters: {
+          type: 'OBJECT',
+          properties: {
+            mode: { type: 'STRING', description: "Canal préféré du visiteur : 'visio' (visioconférence), 'appel' (téléphone) ou 'email' (recevoir des informations)." },
+            synthese: { type: 'STRING', description: "Brief structuré en français pour préparer l'entretien : entreprise/métier, besoin, existant, maturité, pistes évoquées, contraintes, échéance." }
+          },
+          required: ['mode', 'synthese']
+        }
       },
       {
         name: 'terminer_conversation',
-        description: "Termine et raccroche la conversation, quand l'echange est conclu (demande transmise, ou le visiteur dit au revoir).",
+        description: "Termine et raccroche la conversation, quand l'échange est conclu (demande transmise, ou le visiteur dit au revoir).",
         parameters: { type: 'OBJECT', properties: {} }
       }
     ]
   }]
 };
 
-const server = http.createServer((req, res) => {
+function greetingPrompt(resume) {
+  if (resume && String(resume).trim()) {
+    return "[Le visiteur REVIENT (il a déjà échangé avec toi). Résumé de votre échange précédent : « " + String(resume).slice(0, 1500) +
+      " ». Accueille-le chaleureusement comme quelqu'un que tu connais déjà, sans tout redemander, et propose-lui, avec des mots naturels, de reprendre là où vous en étiez ou d'aborder un nouveau sujet.]";
+  }
+  return "[Le visiteur vient d'ouvrir l'assistant. Accueille-le de façon sobre et professionnelle : présente-toi et AIGEN Solutions en une à deux phrases, sur un ton posé, puis demande comment tu peux l'aider.]";
+}
+
+/* ============ Traitement des leads (email client + brief Fable 5 pour l'équipe) ============ */
+const PRIMARY_FROM = 'AIGEN Solutions <formulaire@aigen-solutions.fr>';
+const PRIMARY_TO = ['contact@aigen-solutions.fr'];
+const REPLY_TO_TEAM = 'contact@aigen-solutions.fr';
+const FALLBACK_FROM = 'AIGEN Solutions <onboarding@resend.dev>';
+const BOOKING_URL = 'https://outlook.office.com/bookwithme/user/c673cf9ffdbd4c9c88b02c4b14af2704@aigen-solutions.fr/meetingtype/e2ZXfTWpkUSvi4rNgcr63w2?anonymous&ismsaljsauthenabled&ep=mlink';
+const BRIEF_MODEL = process.env.BRIEF_MODEL || 'claude-fable-5';
+
+const FABLE_SYSTEM = "Tu es le \"manager technique\" d'AIGEN Solutions, agence d'IA sur-mesure. Le fondateur (Onur) vient de recevoir la demande d'un prospect via le site. Prépare-lui un brief INTERNE (jamais envoyé au client) pour son premier rendez-vous. Tu es un architecte de solutions IA senior ET un coach commercial : tu réfléchis en profondeur, tu es pragmatique (aucun fantasme technique), tu proposes des solutions réalistes alignées sur ce qu'AIGEN sait faire : applications métier sur-mesure, extraction et lecture de documents (plans BTP, PDF, fichiers), agents IA vocal et conversationnel, RAG sur documents, vision par ordinateur, automatisation, synthèse documentaire, intégration CRM/ERP.\n\n" +
+  "Format de sortie : HTML simple, uniquement les balises <h3>, <p>, <ul>, <li>, <strong>. Pas de <html> ni <body>, pas d'attribut style, jamais de tiret cadratin. En français. Respecte EXACTEMENT cette structure :\n" +
+  "<h3>En bref</h3> : 2 à 4 phrases sur le vrai besoin, la maturité du prospect et l'angle à jouer.\n" +
+  "<h3>Pistes d'outils à proposer</h3> : 2 à 4 idées d'outils concrets pour CE prospect ; pour chacun, ce qu'il fait et le gain, en une ligne.\n" +
+  "<h3>Comment on le construirait</h3> : pour la ou les 2 pistes les plus pertinentes, les grandes étapes et les briques (LLM, RAG, vision, etc.), concret et pragmatique, avec les points de vigilance (données, sécurité, faisabilité).\n" +
+  "<h3>Pour votre rendez-vous</h3> : 5 à 8 questions précises à poser pour qualifier, PUIS 2 ou 3 phrases clés prêtes à dire (accroche, réassurance).\n\n" +
+  "Ne t'engage sur aucun prix ni délai. Adapte la profondeur à la maturité : prospect qui ne sait rien -> insiste sur les questions de découverte ; prospect avec une idée -> insiste sur la conception. Sois utile et actionnable.";
+
+function esc(s) { return String(s == null ? '' : s).replace(/[<>&]/g, function (c) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]; }); }
+function br(s) { return esc(s).replace(/\n/g, '<br>'); }
+async function resendSend(payload) {
+  const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'Authorization': 'Bearer ' + process.env.RESEND_API_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  return { ok: r.ok, status: r.status };
+}
+
+async function fableBrief(l) {
+  if (!process.env.ANTHROPIC_API_KEY) return '';
+  const userMsg = "Demande reçue via le site AIGEN Solutions.\n"
+    + "Contact : " + l.name + (l.company ? " (" + l.company + ")" : "") + "\n"
+    + "Secteur : " + (l.sector || 'non précisé') + "\n"
+    + (l.mode ? "Canal souhaité : " + l.mode + "\n" : "")
+    + (l.synthese ? "\nSynthèse de l'échange vocal :\n" + l.synthese + "\n" : "")
+    + (l.message ? "\nMessage du visiteur :\n" + l.message + "\n" : "")
+    + "\nPrépare le brief interne pour préparer le rendez-vous.";
+  try {
+    const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 150000);
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', signal: ctrl.signal,
+      headers: { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+      body: JSON.stringify({ model: BRIEF_MODEL, max_tokens: 5000, system: FABLE_SYSTEM, messages: [{ role: 'user', content: userMsg }] })
+    });
+    clearTimeout(to);
+    if (!r.ok) { log('fable http', r.status); return ''; }
+    const j = await r.json();
+    const block = (j.content || []).find(function (c) { return c.type === 'text'; });
+    return block ? block.text : '';
+  } catch (e) { log('fable err', e && e.message); return ''; }
+}
+
+async function sendClientConfirm(name, email, mode, creneau, recap) {
+  const firstName = name.split(' ')[0] || name;
+  const next = mode === 'visio'
+    ? 'Dernière étape pour finaliser : <a href="' + BOOKING_URL + '" style="color:#3159C9;font-weight:bold">choisissez votre créneau de 30 minutes</a>. Vous recevrez ensuite l\'invitation avec le lien de la réunion.'
+    : mode === 'appel'
+    ? 'Un conseiller vous rappellera' + (creneau ? ' (' + esc(creneau) + ')' : ' très prochainement') + '. Vous pouvez aussi <a href="' + BOOKING_URL + '" style="color:#3159C9">réserver un créneau en ligne</a>.'
+    : 'Un conseiller reviendra vers vous avec des informations adaptées. Vous pouvez aussi <a href="' + BOOKING_URL + '" style="color:#3159C9">réserver un échange de 30 minutes</a>.';
+  const html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#232D42;line-height:1.65;max-width:560px">'
+    + '<p>Bonjour ' + esc(firstName) + ',</p>'
+    + '<p>Merci pour votre demande, nous l\'avons bien reçue. ' + next + '</p>'
+    + (recap ? '<div style="background:#F5F7FA;padding:12px 14px;border-radius:8px;color:#4A5568;font-size:14px;margin:14px 0"><strong>Ce que nous avons noté :</strong><br>' + br(String(recap).slice(0, 900)) + '</div>' : '')
+    + '<p>À très bientôt,<br><strong>AIGEN Solutions</strong><br><span style="color:#6E7789;font-size:13px">Outils d\'intelligence artificielle sur-mesure · aigen-solutions.fr</span></p></div>';
+  await resendSend({ from: PRIMARY_FROM, to: [email], reply_to: REPLY_TO_TEAM, subject: 'AIGEN Solutions : votre demande est bien reçue', html });
+}
+
+async function sendTeamBrief(d) {
+  const rows = '<p><strong>Nom :</strong> ' + esc(d.name) + '<br>'
+    + '<strong>Email :</strong> ' + esc(d.email) + '<br>'
+    + '<strong>Entreprise :</strong> ' + (esc(d.company) || 'non précisé') + '<br>'
+    + '<strong>Secteur :</strong> ' + (esc(d.sector) || 'non précisé') + '<br>'
+    + (d.tel ? '<strong>Téléphone :</strong> ' + esc(d.tel) + '<br>' : '')
+    + (d.modeLabel ? '<strong>Canal souhaité :</strong> ' + esc(d.modeLabel) + '<br>' : '')
+    + (d.creneau ? '<strong>Créneau souhaité :</strong> ' + esc(d.creneau) + '<br>' : '')
+    + (d.topic ? '<strong>Sujet :</strong> ' + esc(d.topic) : '') + '</p>';
+  const synthBlock = d.synthese ? '<div style="background:#F5F7FA;border-left:3px solid #3159C9;padding:12px 15px;border-radius:8px;margin:10px 0"><strong style="color:#3159C9">Synthèse de l\'agent vocal</strong><br>' + br(d.synthese) + '</div>' : '';
+  const msgBlock = d.message ? '<p><strong>Message :</strong><br>' + br(d.message) + '</p>' : '';
+  const briefBlock = d.brief
+    ? '<div style="margin-top:22px;padding-top:18px;border-top:2px dashed #D2D9E6"><h2 style="color:#3159C9;margin:0 0 3px">Brief de votre manager technique</h2><p style="color:#6E7789;font-size:13px;margin:0 0 12px">Analyse par Fable 5 pour préparer votre rendez-vous (interne)</p>' + d.brief + '</div>'
+    : '<p style="color:#8A93A6;font-size:13px;margin-top:18px"><em>(Analyse du manager technique indisponible pour cette demande.)</em></p>';
+  const html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#232D42;line-height:1.6;max-width:640px">'
+    + '<h2 style="color:#3159C9;margin:0 0 10px">Nouvelle demande' + (d.modeLabel ? ' (' + esc(d.modeLabel) + ')' : '') + '</h2>'
+    + '<div style="background:#fff;border:1px solid #E4E8F0;border-radius:10px;padding:2px 16px">' + rows + synthBlock + msgBlock
+    + (d.attachments ? '<p style="color:#4A5568"><em>Pièce jointe : ' + esc(d.attachments[0].filename) + '</em></p>' : '') + '</div>'
+    + briefBlock + '</div>';
+  const subject = 'Nouvelle demande' + (d.modeLabel ? ' ' + d.modeLabel : '') + ' de ' + d.name + (d.company ? ' (' + d.company + ')' : '');
+  const payload = { from: PRIMARY_FROM, to: PRIMARY_TO, reply_to: d.email, subject: subject, html: html };
+  if (d.attachments) payload.attachments = d.attachments;
+  let r = await resendSend(payload);
+  if (!r.ok && process.env.MAIL_FALLBACK_TO) {
+    const fb = { from: FALLBACK_FROM, to: [process.env.MAIL_FALLBACK_TO], reply_to: d.email, subject: '[router vers contact@] ' + subject, html: html };
+    if (d.attachments) fb.attachments = d.attachments;
+    await resendSend(fb);
+  }
+}
+
+async function processLead(lead) {
+  const s = (v, n) => String(v || '').trim().slice(0, n);
+  const name = s(lead.name, 200), email = s(lead.email, 200), company = s(lead.company, 200), sector = s(lead.sector, 200);
+  const tel = s(lead.tel, 60), creneau = s(lead.creneau, 200), mode = s(lead.mode, 20), topic = s(lead.topic, 200);
+  const message = s(lead.message, 6000), synthese = s(lead.synthese, 8000);
+  const modeLabel = mode === 'visio' ? 'Visioconférence (30 min)' : mode === 'appel' ? 'Appel téléphonique' : mode === 'email' ? 'Échange par email' : '';
+  let attachments;
+  if (lead.attachment && lead.attachment.content && lead.attachment.filename) {
+    const fn = String(lead.attachment.filename).slice(0, 200).replace(/[\r\n"]/g, '');
+    const content = String(lead.attachment.content);
+    if (content.length < 12 * 1024 * 1024) attachments = [{ filename: fn, content: content }];
+  }
+  log('lead', name, mode || '(page)');
+  sendClientConfirm(name, email, mode, creneau, synthese || message).catch((e) => log('confirm err', e && e.message));
+  const brief = await fableBrief({ name, company, sector, mode: modeLabel, synthese, message });
+  await sendTeamBrief({ name, email, company, sector, tel, creneau, modeLabel, topic, message, synthese, attachments, brief });
+}
+
+function cors(req, res) {
+  const o = req.headers.origin || '';
+  if (ALLOWED.indexOf(o) > -1) {
+    res.setHeader('Access-Control-Allow-Origin', o); res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS'); res.setHeader('Access-Control-Allow-Headers', 'content-type');
+  }
+}
+function readBody(req) {
+  return new Promise((resolve) => {
+    let data = '', big = false;
+    req.on('data', (c) => { data += c; if (data.length > 13 * 1024 * 1024) { big = true; req.destroy(); } });
+    req.on('end', () => resolve(big ? null : data));
+    req.on('error', () => resolve(null));
+  });
+}
+
+const server = http.createServer(async (req, res) => {
+  if (req.method === 'OPTIONS' && req.url === '/lead') { cors(req, res); res.writeHead(204); res.end(); return; }
+  if (req.method === 'POST' && req.url === '/lead') {
+    cors(req, res);
+    const raw = await readBody(req);
+    let lead; try { lead = JSON.parse(raw || '{}'); } catch (e) { lead = {}; }
+    if (lead.botcheck) { res.writeHead(200, { 'content-type': 'application/json' }); res.end('{"success":true}'); return; }
+    const name = String(lead.name || '').trim(), email = String(lead.email || '').trim();
+    if (!name || !/.+@.+\..+/.test(email)) { res.writeHead(400, { 'content-type': 'application/json' }); res.end('{"error":"invalid"}'); return; }
+    res.writeHead(200, { 'content-type': 'application/json' }); res.end('{"success":true}'); // réponse rapide au client
+    processLead(lead).catch((e) => log('processLead err', e && e.message)); // async (Railway reste actif)
+    return;
+  }
   if (req.url === '/health' || req.url === '/') { res.writeHead(200, { 'content-type': 'text/plain' }); res.end('AIGEN voice relay OK'); return; }
   res.writeHead(404); res.end();
 });
@@ -103,7 +251,7 @@ wss.on('connection', async (ws, req) => {
 
   const send = (o) => { try { if (ws.readyState === 1) ws.send(JSON.stringify(o)); } catch (e) {} };
   const startedAt = Date.now();
-  let session = null, closed = false;
+  let session = null, closed = false, started = false;
   log('connexion', origin || '(sans origine)');
 
   const sendText = (text) => { try { session && session.sendClientContent({ turns: [{ role: 'user', parts: [{ text }] }], turnComplete: true }); } catch (e) {} };
@@ -119,19 +267,22 @@ wss.on('connection', async (ws, req) => {
     if (m.toolCall) {
       const responses = [];
       for (const fc of m.toolCall.functionCalls) {
-        let result = 'ok';
-        if (fc.name === 'recueillir_coordonnees') {
-          send({ t: 'form', besoin: (fc.args && fc.args.besoin) || '' });
-          result = "Formulaire affiche au visiteur. Invite-le a le remplir, puis attends la confirmation du systeme.";
-          log('outil: recueillir_coordonnees');
+        if (fc.name === 'proposer_contact') {
+          const mode = (fc.args && fc.args.mode) || 'visio';
+          const synthese = (fc.args && fc.args.synthese) || '';
+          send({ t: 'contact', mode: mode, synthese: synthese });
+          responses.push({ id: fc.id, name: fc.name, response: { result: "Formulaire de contact (" + mode + ") affiche au visiteur. Invite-le a le completer, puis attends la confirmation du systeme." } });
+          log('outil: proposer_contact', mode);
         } else if (fc.name === 'terminer_conversation') {
+          // On NE renvoie PAS de réponse d'outil : sinon le modèle reprend la parole
+          // et lit le résultat (« conversation terminée ») à voix haute. En laissant
+          // l'appel sans réponse, on coupe net sa génération. Le client raccroche
+          // gracieusement (fin de la phrase en cours + sécurité 2 s).
           send({ t: 'end_requested' });
-          result = 'Conversation terminee.';
           log('outil: terminer_conversation');
         }
-        responses.push({ id: fc.id, name: fc.name, response: { result } });
       }
-      try { session.sendToolResponse({ functionResponses: responses }); } catch (e) {}
+      if (responses.length) { try { session.sendToolResponse({ functionResponses: responses }); } catch (e) {} }
     }
     const sc = m.serverContent;
     if (!sc) return;
@@ -143,7 +294,7 @@ wss.on('connection', async (ws, req) => {
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey: KEY }); // vraie clé -> endpoint standard, fiable
+    const ai = new GoogleGenAI({ apiKey: KEY });
     session = await ai.live.connect({
       model: MODEL,
       config: SESSION_CONFIG,
@@ -158,16 +309,17 @@ wss.on('connection', async (ws, req) => {
     log('echec connexion gemini', e && e.message); send({ t: 'error', m: 'connect' }); ws.close(); return;
   }
 
-  // L'agent prend la parole en premier.
-  sendText("[Le visiteur vient d'ouvrir l'assistant. Accueille-le de façon sobre et professionnelle : présente-toi et AIGEN Solutions en une à deux phrases, sur un ton posé, puis demande comment tu peux l'aider.]");
   send({ t: 'ready' });
 
   ws.on('message', (raw) => {
     let msg; try { msg = JSON.parse(raw.toString()); } catch (e) { return; }
-    if (msg.t === 'audio' && msg.d) {
+    if (msg.t === 'start') {
+      if (started) return; started = true;
+      sendText(greetingPrompt(msg.resume)); // l'agent prend la parole (accueil, ou reprise si contexte)
+    } else if (msg.t === 'audio' && msg.d) {
       try { session.sendRealtimeInput({ audio: { data: msg.d, mimeType: 'audio/pcm;rate=16000' } }); } catch (e) {}
     } else if (msg.t === 'form_done') {
-      sendText("[Le visiteur a envoyé ses coordonnées (nom: " + (msg.nom || '') + ", email: " + (msg.email || '') + "). Sa demande a été transmise à l'équipe. Remercie-le brièvement, précise qu'il recevra par email une invitation pour un échange de 30 minutes, puis termine la conversation.]");
+      sendText("[Le visiteur a envoyé ses coordonnées (nom: " + (msg.nom || '') + ", email: " + (msg.email || '') + ") via le canal " + (msg.mode || '') + ". Sa demande a été transmise à l'équipe. Remercie-le chaleureusement, explique la suite selon le canal, puis conclus par une politesse naturelle et appelle l'outil terminer_conversation. Ne prononce jamais de formule technique comme « conversation terminée ».]");
     }
   });
   ws.on('close', cleanup);

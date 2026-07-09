@@ -9,7 +9,7 @@
   'use strict';
 
   // ===== À RENSEIGNER quand vos comptes seront créés =====
-  var GA4_ID = '';   // ex. 'G-XXXXXXXXXX'  (Google Analytics 4)
+  var GA4_ID = 'G-RBK5QWNYGH';   // Google Analytics 4 (propriété AIGEN Solutions)
   var ADS_ID = '';   // ex. 'AW-123456789'  (Google Ads)
   // =======================================================
 

@@ -65,7 +65,7 @@ class VoiceClient {
         if (m.t === "ready") {
           try { await this._initPlayback(); await this.startMic(); }
           catch (e) { clearTimeout(to); if (!settled) { settled = true; reject(e); } return; }
-          try { ws.send(JSON.stringify({ t: "start", resume: resume || "" })); } catch (e) {}
+          try { ws.send(JSON.stringify({ t: "start", resume: resume || "", page: location.pathname })); } catch (e) {}
           this.lastActivity = Date.now();
           this._timer = setInterval(() => {
             if (this._idlePaused) return;
@@ -157,10 +157,16 @@ function mount() {
   let agent = null, state = "closed", lastRole = null, lastBubble = null, curMode = "visio", curSynthese = "";
   let sess = { ts: 0, lines: [], synthese: "", contact: null }, saveT = 0;
 
+  // Découvrabilité : tant que le visiteur n'a JAMAIS essayé l'agent, l'étiquette
+  // reste visible et un halo discret pulse. Après un premier essai : orbe sobre.
+  const KNOWN_KEY = "aigen_va_used", TEASE_KEY = "aigen_va_teased";
+  const isKnown = () => { try { return !!localStorage.getItem(KNOWN_KEY); } catch (e) { return false; } };
+  const markKnown = () => { try { localStorage.setItem(KNOWN_KEY, String(Date.now())); } catch (e) {} };
+
   const launch = document.createElement("button");
   launch.className = "va-launch va-peek";
   launch.setAttribute("aria-label", "Tester AIGEN Live, l'assistant vocal");
-  launch.innerHTML = '<span class="va-core"><i></i><i></i><i></i><i></i><span class="va-live">LIVE</span></span><span class="va-label">AIGEN&nbsp;Live</span>';
+  launch.innerHTML = '<span class="va-core"><i></i><i></i><i></i><i></i><span class="va-live">LIVE</span></span><span class="va-label">' + (isKnown() ? "AIGEN&nbsp;Live" : "Essayer l'agent vocal") + '</span>';
 
   const panel = document.createElement("div");
   panel.className = "va-panel"; panel.setAttribute("role", "dialog");
@@ -176,7 +182,8 @@ function mount() {
     '<div class="va-foot">Assistant IA, voix de synthèse. Micro requis. <a href="' + BOOKING_URL + '" target="_blank" rel="noopener">Préférer un créneau ?</a></div>';
 
   document.body.appendChild(launch); document.body.appendChild(panel);
-  setTimeout(function () { launch.classList.remove("va-peek"); }, 4000);
+  if (isKnown()) setTimeout(function () { launch.classList.remove("va-peek"); }, 4000);
+  else if (!reduce) launch.classList.add("va-pulse");
 
   const $ = (s) => panel.querySelector(s);
   const orb = $("[data-orb]"), statusEl = $("[data-status]"), subEl = $("[data-sub]"), transcript = $("[data-transcript]"), controls = $("[data-controls]");
@@ -184,7 +191,7 @@ function mount() {
   function track(n) { try { window.AIGENConsent && window.AIGENConsent.track(n); } catch (e) {} }
   function scheduleSave() { clearTimeout(saveT); saveT = setTimeout(() => { if (sess.lines.length) saveSession(sess); }, 900); }
 
-  function open() { state = "open"; panel.classList.add("va-open"); panel.setAttribute("aria-hidden", "false"); launch.classList.add("va-hidden"); track("voice_open"); }
+  function open() { state = "open"; markKnown(); hideTeaser(); launch.classList.remove("va-pulse", "va-peek"); panel.classList.add("va-open"); panel.setAttribute("aria-hidden", "false"); launch.classList.add("va-hidden"); track("voice_open"); }
   function close() {
     panel.classList.remove("va-open", "va-incall"); panel.setAttribute("aria-hidden", "true");
     launch.classList.remove("va-hidden"); launch.focus();
@@ -367,9 +374,68 @@ function mount() {
     box.querySelector("[data-fresh]").addEventListener("click", () => { clearSession(); sess = { ts: 0, lines: [], synthese: "", contact: null }; transcript.innerHTML = ""; startCall(""); });
   }
 
-  launch.addEventListener("click", function () { if (loadSession()) showResumeChoice(); else { open(); startCall(""); } });
+  function openAgent() {
+    if (panel.classList.contains("va-open")) return;
+    if (loadSession()) showResumeChoice(); else { open(); startCall(""); }
+  }
+  launch.addEventListener("click", openAgent);
   $(".va-close").addEventListener("click", close);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && panel.classList.contains("va-open")) close(); });
+
+  /* ----- Ouverture depuis n'importe quel bouton [data-va-open] (hero, contact, réalisations) ----- */
+  document.addEventListener("click", function (e) {
+    const t = e.target.closest && e.target.closest("[data-va-open]");
+    if (!t) return;
+    e.preventDefault(); openAgent();
+  });
+
+  /* ----- Invitation unique (jamais répétée avant 30 jours, jamais après un essai) ----- */
+  let teaser = null;
+  function hideTeaser() { if (teaser) { teaser.remove(); teaser = null; } }
+  (function armTeaser() {
+    if (isKnown()) return;
+    let last = 0; try { last = parseInt(localStorage.getItem(TEASE_KEY) || "0", 10) || 0; } catch (e) {}
+    if (Date.now() - last < 1000 * 60 * 60 * 24 * 30) return;
+    setTimeout(function () {
+      if (isKnown() || panel.classList.contains("va-open") || document.querySelector(".va-rdv")) return;
+      try { localStorage.setItem(TEASE_KEY, String(Date.now())); } catch (e) {}
+      teaser = document.createElement("div"); teaser.className = "va-teaser";
+      teaser.setAttribute("role", "note");
+      teaser.innerHTML = '<button class="va-teaser-x" aria-label="Non merci">&times;</button>' +
+        '<p>Une question ? Notre <strong>agent vocal</strong> vous répond de vive voix.</p>' +
+        '<button class="va-teaser-go">Essayer</button>';
+      document.body.appendChild(teaser);
+      requestAnimationFrame(function () { teaser.classList.add("in"); });
+      teaser.querySelector(".va-teaser-x").addEventListener("click", hideTeaser);
+      teaser.querySelector(".va-teaser-go").addEventListener("click", function () { hideTeaser(); openAgent(); });
+    }, 12000);
+  })();
+
+  /* ----- RDV : proposer de préparer avec l'agent avant Bookings (jamais un cul-de-sac) ----- */
+  document.addEventListener("click", function (e) {
+    const a = e.target.closest && e.target.closest("a[data-booking]");
+    if (!a || a.closest(".va-panel")) return;               // depuis le chat : réservation directe
+    let seen = false; try { seen = !!sessionStorage.getItem("aigen_rdv_seen"); } catch (er) {}
+    if (seen || isKnown()) return;                          // connaît déjà l'agent (ou déjà proposé) : direct
+    e.preventDefault(); e.stopPropagation();
+    try { sessionStorage.setItem("aigen_rdv_seen", "1"); } catch (er) {}
+    hideTeaser();
+    const href = a.getAttribute("href");
+    const ov = document.createElement("div"); ov.className = "va-rdv";
+    ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", "Préparer votre rendez-vous");
+    ov.innerHTML = '<div class="va-rdv-card"><button class="va-rdv-x" aria-label="Fermer">&times;</button>' +
+      '<h4>Votre rendez-vous, mieux préparé</h4>' +
+      '<p>En deux minutes, décrivez votre besoin à notre agent vocal : votre premier échange sera préparé sur-mesure.</p>' +
+      '<div class="va-rdv-btns"><button class="va-rdv-agent">' + ICON_MIC + '<span>Décrire mon besoin à l\'agent</span></button>' +
+      '<button class="va-rdv-direct">Réserver directement</button></div></div>';
+    document.body.appendChild(ov);
+    requestAnimationFrame(function () { ov.classList.add("in"); });
+    const kill = function () { ov.remove(); };
+    ov.addEventListener("click", function (ev) { if (ev.target === ov) kill(); });
+    ov.querySelector(".va-rdv-x").addEventListener("click", kill);
+    ov.querySelector(".va-rdv-agent").addEventListener("click", function () { kill(); openAgent(); });
+    ov.querySelector(".va-rdv-direct").addEventListener("click", function () { track("book_appointment"); kill(); window.open(href, "_blank", "noopener"); });
+  }, true);
 }
 
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);

@@ -8,7 +8,8 @@
     { href: 'solutions.html', label: 'Solutions', key: 'solutions' },
     { href: 'realisations.html', label: 'Réalisations', key: 'realisations' },
     { href: 'technologies.html', label: 'Comprendre l\'IA', key: 'technologies' },
-    { href: 'approche.html', label: 'Approche', key: 'approche' }
+    { href: 'approche.html', label: 'Approche', key: 'approche' },
+    { href: 'faq.html', label: 'FAQ', key: 'faq' }
   ];
 
   /* ---------- THEME ---------- */
@@ -75,6 +76,7 @@
             '<a href="approche.html">Notre approche</a>' +
             '<a href="realisations.html">Réalisations</a>' +
             '<a href="technologies.html">Comprendre l\'IA</a>' +
+            '<a href="faq.html">FAQ</a>' +
             '<a href="contact.html">Contact</a>' +
           '</div>' +
           '<div class="footer-col"><h4>Démarrer</h4>' +

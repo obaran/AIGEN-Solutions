@@ -11,7 +11,7 @@ Pour tester les **fonctions serverless** (formulaire `/api/contact`, agent vocal
 L'**accueil cinématique** (plein écran) est actif sur **tous les écrans** (desktop : molette/clavier ; mobile/tablette : balayage) ; seule exception : `prefers-reduced-motion` -> défilement classique. Forçage debug : `?cine=1`, `?s=N` (scène ciblée), `?flat=1` (sans transition).
 
 ## 3. Arborescence
-- **Pages** : `index.html`, `solutions.html`, `realisations.html`, `technologies.html` (onglet affiché « Comprendre l'IA »), `approche.html`, `contact.html`, `mentions-legales.html`, `confidentialite.html`.
+- **Pages** : `index.html`, `solutions.html`, `realisations.html`, `technologies.html` (onglet affiché « Comprendre l'IA »), `approche.html`, `faq.html` (onglet « FAQ », les 5 questions retirées de l'accueil pour l'alléger ; JSON-LD FAQPage dessus), `contact.html`, `mentions-legales.html`, `confidentialite.html`.
 - `css/aigen.css` : design system (tokens couleurs/espacement/rayons + thèmes dark/light), typo, focus-visible/skip-link, grain, header/footer, responsive.
 - `css/components.css` : composants (cartes, hero, bannière cookies, **bande crédibilité**, **agent vocal**…).
 - `css/cinematic.css` : **accueil plein écran** (scènes + transitions par dissolution). Chargé sur `index.html` uniquement.

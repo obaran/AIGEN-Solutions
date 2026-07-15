@@ -396,8 +396,9 @@ function mount() {
     if (isKnown()) return;
     let last = 0; try { last = parseInt(localStorage.getItem(TEASE_KEY) || "0", 10) || 0; } catch (e) {}
     if (Date.now() - last < 1000 * 60 * 60 * 24 * 30) return;
-    setTimeout(function () {
+    function tryShow() {
       if (isKnown() || panel.classList.contains("va-open") || document.querySelector(".va-rdv")) return;
+      if (document.querySelector(".cookie-bar")) { setTimeout(tryShow, 3000); return; } // le choix cookies d'abord
       try { localStorage.setItem(TEASE_KEY, String(Date.now())); } catch (e) {}
       teaser = document.createElement("div"); teaser.className = "va-teaser";
       teaser.setAttribute("role", "note");
@@ -408,7 +409,8 @@ function mount() {
       requestAnimationFrame(function () { teaser.classList.add("in"); });
       teaser.querySelector(".va-teaser-x").addEventListener("click", hideTeaser);
       teaser.querySelector(".va-teaser-go").addEventListener("click", function () { hideTeaser(); openAgent(); });
-    }, 12000);
+    }
+    setTimeout(tryShow, 12000);
   })();
 
   /* ----- RDV : proposer de préparer avec l'agent avant Bookings (jamais un cul-de-sac) ----- */

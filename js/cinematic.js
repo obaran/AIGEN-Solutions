@@ -5,17 +5,18 @@
    par dissolution (géré en CSS). Pas de défilement vertical.
    Contenu plus haut que l'écran : défilement interne d'abord,
    puis passage à la scène suivante au bord.
-   Actif uniquement : grand écran + pointeur fin + motion ok.
-   Sinon : défilement classique (les wrappers .scene restent
+   Actif sur TOUS les écrans (desktop : molette/clavier ;
+   mobile/tablette : balayage). Seule exception : motion
+   réduite -> défilement classique (les wrappers .scene restent
    inertes car tout le style plein écran est scopé .scenes-mode).
    ============================================================ */
 (function () {
   'use strict';
 
-  var mqDesktop = window.matchMedia('(min-width:1025px) and (hover:hover) and (pointer:fine)');
-  var mqReduce  = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var mqCoarse = window.matchMedia('(pointer:coarse)');
   function forced() { try { return location.search.indexOf('cine=1') > -1; } catch (e) { return false; } }
-  function eligible() { return forced() || (mqDesktop.matches && !mqReduce.matches && window.innerHeight >= 600); }
+  function eligible() { return forced() || !mqReduce.matches; }
 
   var sceneList = document.querySelectorAll('.scene');
   // Marquage précoce : aigen.js (reveal) se désactive, et pas d'écran noir avant init.
@@ -63,7 +64,9 @@
 
     var hint = document.createElement('div');
     hint.className = 'scene-hint';
-    hint.innerHTML = '<span class="wheel"></span><span>Défiler</span>';
+    hint.innerHTML = mqCoarse.matches
+      ? '<span class="swipe"></span><span>Balayer</span>'
+      : '<span class="wheel"></span><span>Défiler</span>';
     document.body.appendChild(hint);
 
     var dots = nav.querySelectorAll('button');
@@ -114,7 +117,7 @@
     // --- Molette : défilement interne d'abord, puis passage de scène au bord
     var acc = 0, accTs = 0;
     window.addEventListener('wheel', function (e) {
-      if (e.target && e.target.closest && e.target.closest('.va-panel,.cookie-bar')) return; // laisse défiler les panneaux fixes
+      if (e.target && e.target.closest && e.target.closest('.va-panel,.cookie-bar,.va-rdv,.va-teaser,.lightbox')) return; // laisse vivre les surcouches fixes
       var inner = scenes[idx].querySelector('.scene-inner');
       var down = e.deltaY > 0;
       if (inner && inner.scrollHeight > inner.clientHeight + 4) {
@@ -155,21 +158,27 @@
       else if (k === 'End') { e.preventDefault(); go(scenes.length - 1); }
     });
 
-    // --- Tactile (au cas où un appareil à pointeur fin est aussi tactile)
-    var touchY = null;
-    window.addEventListener('touchstart', function (e) { touchY = e.touches[0].clientY; }, { passive: true });
+    // --- Tactile (mobile / tablette) : balayage vertical = changement de scène.
+    // Défilement interne d'abord si le contenu dépasse ; on ignore les gestes
+    // horizontaux (pills de nav, galeries) et ceux commencés sur une surcouche.
+    var touchY = null, touchX = null, touchOk = false;
+    window.addEventListener('touchstart', function (e) {
+      var t = e.target;
+      touchOk = !(t && t.closest && t.closest('.va-panel,.cookie-bar,.va-rdv,.va-teaser,.lightbox,.site-header,.scene-nav'));
+      touchY = e.touches[0].clientY; touchX = e.touches[0].clientX;
+    }, { passive: true });
     window.addEventListener('touchend', function (e) {
-      if (touchY === null) return;
+      if (touchY === null || !touchOk) { touchY = null; return; }
       var dy = touchY - (e.changedTouches[0].clientY);
+      var dx = touchX - (e.changedTouches[0].clientX);
+      touchY = null;
+      if (Math.abs(dy) < 56 || Math.abs(dx) > Math.abs(dy)) return; // trop court, ou geste horizontal
       var inner = scenes[idx].querySelector('.scene-inner');
-      var canScroll = inner && inner.scrollHeight > inner.clientHeight + 4;
-      if (Math.abs(dy) < 50) { touchY = null; return; }
-      if (canScroll) {
+      if (inner && inner.scrollHeight > inner.clientHeight + 4) {
         var atTop = inner.scrollTop <= 0, atBottom = inner.scrollTop + inner.clientHeight >= inner.scrollHeight - 2;
-        if ((dy > 0 && !atBottom) || (dy < 0 && !atTop)) { touchY = null; return; }
+        if ((dy > 0 && !atBottom) || (dy < 0 && !atTop)) return; // laisse le défilement interne vivre
       }
       if (dy > 0) next(); else prev();
-      touchY = null;
     }, { passive: true });
 
     // --- Liens d'ancrage internes (ex : sommaire) : aller à la scène cible + défilement interne

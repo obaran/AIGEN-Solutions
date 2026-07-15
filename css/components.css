@@ -278,8 +278,10 @@
   .trust-logos{gap:28px}
 }
 
-/* ---------- Bandeau cookies (bas-centre, impossible à rater, message sobre) ---------- */
-.cookie-bar{position:fixed;left:50%;bottom:18px;z-index:1250;width:min(700px,calc(100% - 32px));
+/* ---------- Bandeau cookies (bas-centre, impossible à rater, message sobre) ----------
+   z-index AU-DESSUS du lanceur vocal : sur mobile ils partagent le bas d'écran,
+   le choix cookies doit rester cliquable ; le lanceur redevient visible après. */
+.cookie-bar{position:fixed;left:50%;bottom:18px;z-index:1360;width:min(700px,calc(100% - 32px));
   background:var(--surface-2);border:1px solid var(--line-2);border-radius:16px;padding:16px 20px;
   box-shadow:0 18px 55px -12px rgba(15,20,35,.4);display:flex;align-items:center;gap:18px;
   transform:translate(-50%,16px);opacity:0;transition:transform .45s var(--ease),opacity .45s}
@@ -419,7 +421,12 @@
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:var(--shadow);transition:max-width .45s var(--ease-out),opacity .3s,padding .4s,margin .45s}
 .va-launch:hover .va-label,.va-launch:focus-visible .va-label,.va-launch.va-peek .va-label{max-width:220px;opacity:1;padding:10px 16px;margin-right:12px}
 .va-launch.va-hidden{opacity:0;pointer-events:none;transform:translateY(14px) scale(.9)}
-@media(max-width:680px){.va-launch{right:16px;bottom:16px}.va-launch .va-label{display:none}}
+@media(max-width:680px){
+  .va-launch{right:16px;bottom:16px}
+  .va-launch .va-label{display:none}
+  /* tant que l'agent n'a jamais été essayé, l'étiquette reste lisible aussi au doigt */
+  .va-launch.va-peek .va-label{display:block;font-size:12.5px}
+}
 @media (prefers-reduced-motion: reduce){.va-launch .va-core i,.va-launch .va-core::before{animation:none}}
 
 /* Halo discret tant que l'agent n'a jamais été essayé */

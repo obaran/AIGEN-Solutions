@@ -278,26 +278,26 @@
   .trust-logos{gap:28px}
 }
 
-/* ---------- Bandeau cookies (bas-centre, impossible à rater, message sobre) ----------
-   z-index AU-DESSUS du lanceur vocal : sur mobile ils partagent le bas d'écran,
-   le choix cookies doit rester cliquable ; le lanceur redevient visible après. */
-.cookie-bar{position:fixed;left:50%;bottom:18px;z-index:1360;width:min(700px,calc(100% - 32px));
-  background:var(--surface-2);border:1px solid var(--line-2);border-radius:16px;padding:16px 20px;
-  box-shadow:0 18px 55px -12px rgba(15,20,35,.4);display:flex;align-items:center;gap:18px;
-  transform:translate(-50%,16px);opacity:0;transition:transform .45s var(--ease),opacity .45s}
-.cookie-bar.in{transform:translate(-50%,0);opacity:1}
-.cookie-bar p{margin:0;flex:1;font-size:14px;line-height:1.55;color:var(--fg-soft)}
+/* ---------- Consentement cookies : fenêtre CENTRÉE (choix immédiat) ----------
+   Le ::before dessine un voile plein écran qui bloque la page derrière
+   (inset géant : le transform du parent fait du modal le référent "fixed").
+   Refuser reste aussi simple qu'Accepter (CNIL). Message sobre conservé. */
+.cookie-bar{position:fixed;left:50%;top:50%;z-index:1360;width:min(480px,calc(100% - 40px));
+  background:var(--surface-2);border:1px solid var(--line-2);border-radius:18px;padding:24px 26px;
+  box-shadow:0 30px 90px -18px rgba(10,14,24,.55);display:flex;flex-direction:column;gap:18px;
+  transform:translate(-50%,-46%);opacity:0;transition:transform .45s var(--ease),opacity .45s}
+.cookie-bar::before{content:'';position:fixed;inset:-120vmax;z-index:-1;
+  background:rgba(10,14,24,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.cookie-bar.in{transform:translate(-50%,-50%);opacity:1}
+.cookie-bar p{margin:0;font-size:15px;line-height:1.6;color:var(--fg-soft)}
 .cookie-bar a{color:var(--accent-bright);text-decoration:underline}
-.cookie-actions{display:flex;gap:9px;justify-content:flex-end;flex:none}
-.cookie-bar button{font-family:'Outfit',sans-serif;font-weight:600;font-size:13.5px;padding:9px 18px;border-radius:10px;cursor:pointer;border:1px solid transparent;transition:.25s}
+.cookie-actions{display:flex;gap:10px;justify-content:flex-end}
+.cookie-actions button{flex:1}
+.cookie-bar button{font-family:'Outfit',sans-serif;font-weight:600;font-size:14.5px;padding:12px 20px;border-radius:11px;cursor:pointer;border:1px solid transparent;transition:.25s}
 .cookie-refuse{background:transparent;border-color:var(--line-2);color:var(--fg-soft)}
 .cookie-refuse:hover{color:var(--fg);border-color:var(--accent)}
 .cookie-accept{background:var(--accent);color:var(--on-accent)}
 .cookie-accept:hover{background:var(--accent-bright)}
-@media(max-width:640px){
-  .cookie-bar{flex-direction:column;align-items:stretch;gap:12px;bottom:12px}
-  .cookie-actions button{flex:1}
-}
 
 /* ---------- Strip références (logo-ready) ---------- */
 .trust-logos img{height:26px;width:auto;opacity:.55;filter:grayscale(1) brightness(1.35);transition:.3s}

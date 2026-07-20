@@ -44,16 +44,19 @@
   if (!hasTags()) { return; }                    // aucun identifiant → pas de bannière
 
   function banner() {
+    // Sur les pages confidentialité / mentions légales : variante DISCRÈTE en coin,
+    // sans voile (on doit pouvoir LIRE la politique avant de choisir).
+    var quiet = /confidentialite|mentions-legales/.test(location.pathname);
     var b = document.createElement('div');
-    b.className = 'cookie-bar';
+    b.className = 'cookie-bar' + (quiet ? ' cookie-quiet' : '');
     b.setAttribute('role', 'dialog');
     b.setAttribute('aria-label', 'Cookies');
     b.innerHTML =
-      '<p>On utilise des cookies de mesure d’audience pour améliorer le site. ' +
+      '<p>L’essentiel au fonctionnement, et, avec votre accord, une mesure d’audience pour améliorer le site. ' +
       '<a href="confidentialite.html">En savoir plus</a></p>' +
       '<div class="cookie-actions">' +
-        '<button type="button" class="cookie-refuse">Refuser</button>' +
-        '<button type="button" class="cookie-accept">Accepter</button>' +
+        '<button type="button" class="cookie-refuse">Essentiel uniquement</button>' +
+        '<button type="button" class="cookie-accept">Tout accepter</button>' +
       '</div>';
     document.body.appendChild(b);
     requestAnimationFrame(function () { b.classList.add('in'); });

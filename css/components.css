@@ -299,6 +299,15 @@
 .cookie-accept{background:var(--accent);color:var(--on-accent)}
 .cookie-accept:hover{background:var(--accent-bright)}
 
+/* Variante discrète (pages confidentialité / mentions légales) : en coin,
+   SANS voile, pour que la politique reste lisible avant de choisir. */
+.cookie-bar.cookie-quiet{top:auto;left:auto;right:18px;bottom:18px;width:min(400px,calc(100% - 36px));
+  padding:16px 18px;gap:12px;transform:translateY(14px);box-shadow:var(--shadow-lg)}
+.cookie-bar.cookie-quiet::before{display:none}
+.cookie-bar.cookie-quiet.in{transform:none}
+.cookie-bar.cookie-quiet p{font-size:13.5px}
+.cookie-bar.cookie-quiet button{font-size:13px;padding:9px 14px}
+
 /* ---------- Strip références (logo-ready) ---------- */
 .trust-logos img{height:26px;width:auto;opacity:.55;filter:grayscale(1) brightness(1.35);transition:.3s}
 .trust-logos a:hover img,.trust-logos img:hover{opacity:1;filter:none}

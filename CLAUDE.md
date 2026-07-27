@@ -69,7 +69,7 @@ AIGEN Solutions — **SAS**, siège **77 Avenue la Bruyère, 38100 Grenoble**, *
 - [ ] **LinkedIn** : URL de la page pro → réintégrer l'icône dans le footer (`buildFooter`).
 - [ ] **Sécurité (rotation des clés)** : les clés **Gemini**, **Resend** et **Anthropic** ont transité en clair -> à régénérer chez le fournisseur, révoquer l'ancienne, puis restreindre (Gemini : limiter à l'API Generative Language ; Resend : scope envoi + domaine `aigen-solutions.fr`). Les 3 (+ `MAIL_FALLBACK_TO`) sont désormais en env **Railway** (backend). Rotation SÉCURISÉE sans jamais exposer la valeur : `./secure-keys.sh NOM_DE_LA_CLE` (saisie masquée -> pousse sur Railway prod + met à jour `.env` local, hors chat/historique). Dépôt vérifié propre : aucune clé dans le code ni l'historique git, `.env` gitignoré et jamais committé.
 - [x] **Agent vocal en prod** : backend déployé sur **Railway** (`aigen-voice-backend`), `GEMINI_API_KEY` posée, relais opérationnel (endpoint standard, fiable).
-- [ ] (Optionnel) nettoyer les assets orphelins : `assets/img/grandirserein.png`, `etabli.png`, `mediatrad-1.png`.
+- [x] Assets orphelins supprimés (`grandirserein.png`, `etabli.png`). `mediatrad-1.png` est UTILISÉ (galerie carte réalisation, `index.html`), conservé.
 - [x] Strip « Ils nous font confiance » : Grandir Serein + L'Établi retirés (ne reste que emlyon business school, Bioforce, Grand compte BTP).
 
 ## 11. Agent vocal (front + back) + accueil cinématique

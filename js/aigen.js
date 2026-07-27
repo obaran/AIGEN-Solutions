@@ -64,6 +64,7 @@
             '<p>Nous concevons des outils d\'intelligence artificielle sur-mesure pour les entreprises qui veulent automatiser le concret.</p>' +
             '<div class="footer-social">' +
               '<a href="mailto:contact@aigen-solutions.fr" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg></a>' +
+              '<a href="https://www.linkedin.com/company/ai-gensolutions" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4V8h4v1.5A6 6 0 0 1 16 8z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>' +
             '</div>' +
           '</div>' +
           '<div class="footer-col"><h4>Solutions</h4>' +

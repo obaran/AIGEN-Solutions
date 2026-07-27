@@ -66,7 +66,7 @@ AIGEN Solutions — **SAS**, siège **77 Avenue la Bruyère, 38100 Grenoble**, *
 ## 10. Tâches en attente
 - [ ] **GA4** : récupérer l'ID `G-XXXX` → activer suivi + bannière + maj confidentialité.
 - [ ] **Google Ads** : landing page dédiée + kit de campagne (mots-clés, annonces, ciblage).
-- [ ] **LinkedIn** : URL de la page pro → réintégrer l'icône dans le footer (`buildFooter`).
+- [x] **LinkedIn** : icône réintégrée dans le footer (`buildFooter`) → https://www.linkedin.com/company/ai-gensolutions
 - [ ] **Sécurité (rotation des clés)** : les clés **Gemini**, **Resend** et **Anthropic** ont transité en clair -> à régénérer chez le fournisseur, révoquer l'ancienne, puis restreindre (Gemini : limiter à l'API Generative Language ; Resend : scope envoi + domaine `aigen-solutions.fr`). Les 3 (+ `MAIL_FALLBACK_TO`) sont désormais en env **Railway** (backend). Rotation SÉCURISÉE sans jamais exposer la valeur : `./secure-keys.sh NOM_DE_LA_CLE` (saisie masquée -> pousse sur Railway prod + met à jour `.env` local, hors chat/historique). Dépôt vérifié propre : aucune clé dans le code ni l'historique git, `.env` gitignoré et jamais committé.
 - [x] **Agent vocal en prod** : backend déployé sur **Railway** (`aigen-voice-backend`), `GEMINI_API_KEY` posée, relais opérationnel (endpoint standard, fiable).
 - [x] Assets orphelins supprimés (`grandirserein.png`, `etabli.png`). `mediatrad-1.png` est UTILISÉ (galerie carte réalisation, `index.html`), conservé.

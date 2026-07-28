@@ -40,15 +40,16 @@
     if (footer && lastInner) lastInner.appendChild(footer);
 
     // --- UI : points de navigation, compteur, indice, barre de progression
+    var T = function (k, fr) { return (window.AIGENI18N ? window.AIGENI18N.t(k, fr) : fr); };
     var nav = document.createElement('nav');
     nav.className = 'scene-nav';
-    nav.setAttribute('aria-label', 'Navigation par sections');
+    nav.setAttribute('aria-label', T('cine.nav', 'Navigation par sections'));
     scenes.forEach(function (s, i) {
-      var label = s.getAttribute('data-label') || ('Section ' + (i + 1));
+      var label = s.getAttribute('data-label') || (T('cine.section', 'Section') + ' ' + (i + 1));
       var b = document.createElement('button');
       b.type = 'button';
       b.setAttribute('data-label', label);
-      b.setAttribute('aria-label', 'Aller à : ' + label);
+      b.setAttribute('aria-label', T('cine.goto', 'Aller à :') + ' ' + label);
       b.addEventListener('click', function () { go(i); });
       nav.appendChild(b);
     });
@@ -65,8 +66,8 @@
     var hint = document.createElement('div');
     hint.className = 'scene-hint';
     hint.innerHTML = mqCoarse.matches
-      ? '<span class="swipe"></span><span>Balayer</span>'
-      : '<span class="wheel"></span><span>Défiler</span>';
+      ? '<span class="swipe"></span><span>' + T('cine.swipe', 'Balayer') + '</span>'
+      : '<span class="wheel"></span><span>' + T('cine.scroll', 'Défiler') + '</span>';
     document.body.appendChild(hint);
 
     var dots = nav.querySelectorAll('button');
@@ -203,6 +204,12 @@
     });
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
+  // Attendre le dictionnaire de langue (immédiat en français) : les data-label
+  // des scènes doivent être traduits AVANT la construction des points de nav.
+  function boot() {
+    if (window.AIGENI18N) window.AIGENI18N.ready(init);
+    else init();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();

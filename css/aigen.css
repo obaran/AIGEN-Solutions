@@ -234,6 +234,33 @@ h1,h2,h3,h4{font-family:'Outfit',system-ui,sans-serif;font-weight:600;letter-spa
 .lb-counter{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.7);font-size:14px;font-family:'Outfit',sans-serif;letter-spacing:.05em}
 .lb-nav svg,.lb-close svg{width:20px;height:20px}
 
+/* ---------- Internationalisation (sélecteur de langue + RTL arabe) ---------- */
+.lang-switch{position:relative;flex:none}
+.lang-switch select{appearance:none;-webkit-appearance:none;height:42px;padding:0 30px 0 13px;border-radius:11px;
+  border:1px solid var(--line-2);background:var(--card-grad-a);color:var(--fg-soft);cursor:pointer;
+  font-family:'Outfit',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.04em;transition:.3s}
+.lang-switch select:hover{color:var(--accent-bright);border-color:var(--accent)}
+.lang-switch::after{content:'';position:absolute;top:50%;inset-inline-end:11px;width:7px;height:7px;pointer-events:none;
+  border-right:1.8px solid currentColor;border-bottom:1.8px solid currentColor;color:var(--fg-dim);
+  transform:translateY(-70%) rotate(45deg)}
+[dir="rtl"] .lang-switch select{padding:0 13px 0 30px}
+
+/* Arabe : script RTL. Les interlettrages (letter-spacing) cassent les
+   ligatures arabes -> on les neutralise, et on sert une pile de polices
+   système couvrant l'arabe (SF Arabic, Segoe UI, Noto...). */
+html[lang="ar"] body{font-family:'Segoe UI','SF Pro Text','Geeza Pro','Noto Naskh Arabic','Noto Sans Arabic',system-ui,Tahoma,Arial,sans-serif}
+html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3,html[lang="ar"] h4,
+html[lang="ar"] .btn,html[lang="ar"] .eyebrow,html[lang="ar"] .brand .wm .tag{
+  font-family:'Segoe UI','SF Pro Display','Geeza Pro','Noto Naskh Arabic','Noto Sans Arabic',system-ui,Tahoma,Arial,sans-serif}
+html[lang="ar"] *{letter-spacing:0!important}
+html[lang="ar"] h1,html[lang="ar"] h2{line-height:1.28}
+html[lang="ar"] .page-hero h1{line-height:1.22}
+[dir="rtl"] .eyebrow::before{background:linear-gradient(-90deg,transparent,var(--accent))}
+[dir="rtl"] .nav a.lnk::after{left:auto;right:0}
+[dir="rtl"] .skip-link{left:auto;right:16px}
+/* Le logo (nom de marque) reste en alphabet latin, sens LTR, dans toutes les langues */
+.brand .wm .name{direction:ltr;unicode-bidi:isolate}
+
 /* ---------- Responsive ---------- */
 @media(max-width:1040px){
   /* Nav mobile : liens toujours visibles (pills défilables) au lieu du menu burger caché */

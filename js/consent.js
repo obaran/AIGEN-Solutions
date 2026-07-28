@@ -44,6 +44,8 @@
   if (!hasTags()) { return; }                    // aucun identifiant → pas de bannière
 
   function banner() {
+    // Traduction (js/i18n.js) : t('clé', 'texte français source')
+    var T = function (k, fr) { return (window.AIGENI18N ? window.AIGENI18N.t(k, fr) : fr); };
     // Sur les pages confidentialité / mentions légales : variante DISCRÈTE en coin,
     // sans voile (on doit pouvoir LIRE la politique avant de choisir).
     var quiet = /confidentialite|mentions-legales/.test(location.pathname);
@@ -52,17 +54,20 @@
     b.setAttribute('role', 'dialog');
     b.setAttribute('aria-label', 'Cookies');
     b.innerHTML =
-      '<p>L’essentiel au fonctionnement, et, avec votre accord, une mesure d’audience pour améliorer le site. ' +
-      '<a href="confidentialite.html">En savoir plus</a></p>' +
+      '<p>' + T('cookie.text', 'L’essentiel au fonctionnement, et, avec votre accord, une mesure d’audience pour améliorer le site.') + ' ' +
+      '<a href="confidentialite.html">' + T('cookie.more', 'En savoir plus') + '</a></p>' +
       '<div class="cookie-actions">' +
-        '<button type="button" class="cookie-refuse">Essentiel uniquement</button>' +
-        '<button type="button" class="cookie-accept">Tout accepter</button>' +
+        '<button type="button" class="cookie-refuse">' + T('cookie.refuse', 'Essentiel uniquement') + '</button>' +
+        '<button type="button" class="cookie-accept">' + T('cookie.accept', 'Tout accepter') + '</button>' +
       '</div>';
     document.body.appendChild(b);
     requestAnimationFrame(function () { b.classList.add('in'); });
     b.querySelector('.cookie-accept').addEventListener('click', function () { set('yes'); loadTags(); b.remove(); });
     b.querySelector('.cookie-refuse').addEventListener('click', function () { set('no'); b.remove(); });
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', banner);
-  else banner();
+  function boot() {
+    if (window.AIGENI18N) window.AIGENI18N.ready(banner); else banner();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();

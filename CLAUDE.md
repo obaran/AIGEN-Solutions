@@ -49,10 +49,19 @@ L'**accueil cinématique** (plein écran) est actif sur **tous les écrans** (de
 - **Secrets (jamais dans le code)** : variables d'env Vercel **`RESEND_API_KEY`** + **`MAIL_FALLBACK_TO`**. Domaine Resend `aigen-solutions.fr` **vérifié** (DNS `send.` + `resend._domainkey` chez OVH).
 - **RDV** : bouton « Choisir un créneau » → page **Microsoft Bookings** (lien dans `contact.html`, attribut `data-booking`).
 
-## 7. Cookies & suivi (Google Ads / GA4) — EN COURS
-- `js/consent.js` : bannière cookies **minimaliste**, charge GA4/Ads **uniquement après « Accepter »** (RGPD). **DORMANT** tant que les IDs en haut du fichier sont vides → aucune bannière ne s'affiche.
-- **À FAIRE** : créer une propriété **GA4** → coller l'`G-XXXXXXXXXX` dans `consent.js` (`GA4_ID`) ; idem `AW-XXXX` (`ADS_ID`) quand le compte Google Ads existe. Puis : maj page **confidentialité** (mention GA4), créer une **landing page** pub, livrer le **kit de campagne**.
+## 7. Cookies & suivi (Google Ads / GA4)
+- `js/consent.js` : bannière cookies **minimaliste**, charge GA4/Ads **uniquement après « Accepter »** (RGPD). **GA4 ACTIF** : `GA4_ID = 'G-RBK5QWNYGH'` (propriété AIGEN Solutions), page confidentialité à jour.
+- **À FAIRE** : coller l'`AW-XXXX` (`ADS_ID`) quand le compte Google Ads existera. Puis : landing page pub + kit de campagne.
 - Conversions déjà câblées : `generate_lead` (envoi formulaire) et `book_appointment` (clic RDV) via `window.AIGENConsent.track(...)`.
+
+## 7 bis. Internationalisation (fr / en / ar)
+- Le site est **trilingue** : français (langue source, écrite dans le HTML), anglais, arabe (**RTL**). La langue s'applique selon : `?lang=xx` dans l'URL → choix mémorisé (`localStorage aigen-lang`) → **langue du navigateur** → fr. Sélecteur **FR / EN / ع** dans le header (généré par `buildHeader`).
+- `js/i18n.js` (chargé dans `<head>` AVANT les autres scripts) : détection, chargement du dictionnaire, application. API : `AIGENI18N.lang`, `.t(clé, 'français source')`, `.ready(cb)` (les scripts qui affichent du texte attendent `ready`), `.setLang(l)` (recharge la page). Anti-flash : `html.i18n-wait body{visibility:hidden}` max 2,5 s ; en cas d'échec de chargement du dictionnaire → site en français.
+- **Dictionnaires** : `js/lang/en.js` + `js/lang/ar.js` (`window.AIGEN_DICT.en/.ar`). Clés préfixées par page (`home.`, `sol.`, `real.`, `tech.`, `app.`, `faq.`, `contact.`, `legal.`, `priv.`) + communes (`nav.`, `footer.`, `cookie.`, `va.` agent vocal, `cine.`, `scene.`, `brand.slogan`, `a11y.skip`).
+- **Balisage HTML** : `data-i18n="clé"` (remplace le innerHTML, peut contenir du HTML), `data-i18n-attr="attr:clé;attr2:clé2"` (attributs : alt, placeholder, data-label des scènes…). `<title>` et `<meta name="description">` balisés aussi. Les og:/JSON-LD restent en français (SEO du domaine .fr).
+- **RTL arabe** : `dir="rtl"` posé par i18n.js ; pile de polices arabes système + `letter-spacing:0` forcé (les interlettrages cassent les ligatures arabes) dans `aigen.css` ; miroirs de composants en fin de `components.css` (`[dir="rtl"] …`). Le logo/nom de marque reste LTR.
+- **Agent vocal multilingue** : le front envoie `lang` dans le message `start` (WS) et dans le payload `/lead`. Le back (`server/index.js`) : section « # Langue » du SYSTEM_PROMPT + consigne dans `greetingPrompt` → l'agent fait son accueil dans la langue du navigateur et suit le visiteur s'il change ; la **synthèse reste en français** (brief interne). Email de confirmation visiteur en fr/en/ar (`CONFIRM_I18N`) ; pour en/ar on n'y reprend pas la synthèse française, seulement le message du visiteur.
+- **AJOUT DE CONTENU** : toute nouvelle chaîne visible doit être balisée `data-i18n` + ajoutée aux DEUX dictionnaires (en + ar). Un libellé généré en JS passe par `AIGENI18N.t('clé', 'texte fr')`.
 
 ## 8. Conventions à respecter (IMPORTANT)
 - **JAMAIS de tiret cadratin `—`** dans les textes français (virgule / deux-points / parenthèses à la place). Le client y tient.
@@ -64,7 +73,7 @@ L'**accueil cinématique** (plein écran) est actif sur **tous les écrans** (de
 AIGEN Solutions — **SAS**, siège **77 Avenue la Bruyère, 38100 Grenoble**, **RCS Grenoble 993 234 632** (SIREN 993 234 632). Président : **Onur Baran**. Email : **contact@aigen-solutions.fr**.
 
 ## 10. Tâches en attente
-- [ ] **GA4** : récupérer l'ID `G-XXXX` → activer suivi + bannière + maj confidentialité.
+- [x] **GA4** : ID `G-RBK5QWNYGH` actif dans `consent.js`, bannière + page confidentialité à jour.
 - [ ] **Google Ads** : landing page dédiée + kit de campagne (mots-clés, annonces, ciblage).
 - [x] **LinkedIn** : icône réintégrée dans le footer (`buildFooter`) → https://www.linkedin.com/company/ai-gensolutions
 - [ ] **Sécurité (rotation des clés)** : les clés **Gemini**, **Resend** et **Anthropic** ont transité en clair -> à régénérer chez le fournisseur, révoquer l'ancienne, puis restreindre (Gemini : limiter à l'API Generative Language ; Resend : scope envoi + domaine `aigen-solutions.fr`). Les 3 (+ `MAIL_FALLBACK_TO`) sont désormais en env **Railway** (backend). Rotation SÉCURISÉE sans jamais exposer la valeur : `./secure-keys.sh NOM_DE_LA_CLE` (saisie masquée -> pousse sur Railway prod + met à jour `.env` local, hors chat/historique). Dépôt vérifié propre : aucune clé dans le code ni l'historique git, `.env` gitignoré et jamais committé.

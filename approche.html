@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Notre approche &amp; expertise · AIGEN Solutions</title>
-<meta name="description" content="La méthode AIGEN Solutions : audit, conception, développement et déploiement d'outils d'IA sur-mesure. Expertise technique et conformité RGPD.">
+<title data-i18n="app.title">Notre approche &amp; expertise · AIGEN Solutions</title>
+<meta name="description" data-i18n="app.desc" content="La méthode AIGEN Solutions : audit, conception, développement et déploiement d'outils d'IA sur-mesure. Expertise technique et conformité RGPD.">
 <link rel="canonical" href="https://aigen-solutions.fr/approche.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AIGEN Solutions">
@@ -32,10 +32,11 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Combien de temps pour livrer un premier outil ?","acceptedAnswer":{"@type":"Answer","text":"Cela dépend du périmètre, mais notre approche vise une première version utilisable rapidement. Nous privilégions les livraisons courtes et itératives : vous voyez le résultat tôt, puis on l'affine ensemble plutôt que d'attendre des mois un produit « fini »."}},{"@type":"Question","name":"Mes données sont-elles en sécurité ?","acceptedAnswer":{"@type":"Answer","text":"Oui. La protection des données est pensée dès la conception : hébergement maîtrisé, accès contrôlés et conformité RGPD. Pour les secteurs réglementés (santé, public), nous adaptons l'architecture à vos exigences de confidentialité et de souveraineté."}},{"@type":"Question","name":"Faut-il être « tech » pour travailler avec vous ?","acceptedAnswer":{"@type":"Answer","text":"Pas du tout. Notre rôle est justement de faire le pont entre votre métier et la technique. Vous nous expliquez vos tâches et vos contraintes ; nous traduisons cela en un outil simple à utiliser, et nous accompagnons vos équipes dans la prise en main."}},{"@type":"Question","name":"Comment se passe la facturation ?","acceptedAnswer":{"@type":"Answer","text":"L'audit initial est gratuit et sans engagement. Ensuite, nous établissons un périmètre et un budget clairs avant de démarrer. Vous savez exactement ce que vous payez et ce que vous obtenez."}},{"@type":"Question","name":"Et après la livraison ?","acceptedAnswer":{"@type":"Answer","text":"Un outil vivant a besoin d'évoluer. Nous assurons la maintenance, le support et les évolutions continues pour que votre solution reste performante, sécurisée et alignée sur vos besoins au fil du temps."}}]}
 </script>
+<script src="js/i18n.js"></script>
 <script src="js/logo.js"></script>
 </head>
 <body data-page="approche">
-<a href="#main" class="skip-link">Aller au contenu</a>
+<a href="#main" class="skip-link" data-i18n="a11y.skip">Aller au contenu</a>
 <div class="bg-ambient"></div>
 <div class="bg-grid"></div>
 
@@ -43,60 +44,60 @@
 
 <main id="main">
 
-<div class="scene" data-label="Approche"><div class="scene-inner">
+<div class="scene" data-label="Approche" data-i18n-attr="data-label:nav.approche"><div class="scene-inner">
 <section class="page-hero">
   <div class="container">
     <div class="narrow">
-      <div class="breadcrumb reveal"><a href="index.html">Accueil</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Approche</span></div>
-      <span class="eyebrow reveal">Notre approche</span>
-      <h1 class="reveal" data-delay="60">Une méthode <span class="grad">claire, des résultats concrets</span></h1>
-      <p class="lead reveal" data-delay="120">Nous ne livrons pas une démo qui impressionne puis dort dans un tiroir. Nous construisons des outils utilisés tous les jours, et nous restons à vos côtés pour qu'ils le restent.</p>
+      <div class="breadcrumb reveal"><a href="index.html" data-i18n="scene.home">Accueil</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span data-i18n="nav.approche">Approche</span></div>
+      <span class="eyebrow reveal" data-i18n="footer.l.approach">Notre approche</span>
+      <h1 class="reveal" data-delay="60" data-i18n="app.hero.h1">Une méthode <span class="grad">claire, des résultats concrets</span></h1>
+      <p class="lead reveal" data-delay="120" data-i18n="app.hero.lead">Nous ne livrons pas une démo qui impressionne puis dort dans un tiroir. Nous construisons des outils utilisés tous les jours, et nous restons à vos côtés pour qu'ils le restent.</p>
     </div>
   </div>
 </section>
 </div></div>
 
 <!-- ===== PROCESS ===== -->
-<div class="scene" data-label="Méthode"><div class="scene-inner">
+<div class="scene" data-label="Méthode" data-i18n-attr="data-label:scene.method"><div class="scene-inner">
 <section class="section tight">
   <div class="container">
     <div class="section-head reveal">
-      <span class="eyebrow">Le déroulé</span>
-      <h2>Quatre étapes, zéro flou</h2>
+      <span class="eyebrow" data-i18n="app.meth.eyebrow">Le déroulé</span>
+      <h2 data-i18n="app.meth.h2">Quatre étapes, zéro flou</h2>
     </div>
     <div class="proc">
-      <div class="proc-step reveal"><div class="proc-num">1</div><h3>Audit</h3><p>On analyse vos processus, on identifie les tâches chronophages et on évalue honnêtement où l'IA crée un gain réel, ou non.</p></div>
-      <div class="proc-step reveal" data-delay="100"><div class="proc-num">2</div><h3>Conception</h3><p>On dessine l'outil avec vous : périmètre, interface, logique métier. Vous validez avant qu'une ligne de code soit écrite.</p></div>
-      <div class="proc-step reveal" data-delay="200"><div class="proc-num">3</div><h3>Développement</h3><p>On livre vite une première version utilisable, puis on itère sur vos retours et ceux de vos équipes terrain.</p></div>
-      <div class="proc-step reveal" data-delay="300"><div class="proc-num">4</div><h3>Déploiement</h3><p>Mise en production, prise en main des équipes, documentation et support continu. L'outil vit et s'améliore.</p></div>
+      <div class="proc-step reveal"><div class="proc-num">1</div><h3 data-i18n="home.meth.1.h">Audit</h3><p data-i18n="app.meth.1.p">On analyse vos processus, on identifie les tâches chronophages et on évalue honnêtement où l'IA crée un gain réel, ou non.</p></div>
+      <div class="proc-step reveal" data-delay="100"><div class="proc-num">2</div><h3 data-i18n="home.meth.2.h">Conception</h3><p data-i18n="app.meth.2.p">On dessine l'outil avec vous : périmètre, interface, logique métier. Vous validez avant qu'une ligne de code soit écrite.</p></div>
+      <div class="proc-step reveal" data-delay="200"><div class="proc-num">3</div><h3 data-i18n="home.meth.3.h">Développement</h3><p data-i18n="app.meth.3.p">On livre vite une première version utilisable, puis on itère sur vos retours et ceux de vos équipes terrain.</p></div>
+      <div class="proc-step reveal" data-delay="300"><div class="proc-num">4</div><h3 data-i18n="home.meth.4.h">Déploiement</h3><p data-i18n="app.meth.4.p">Mise en production, prise en main des équipes, documentation et support continu. L'outil vit et s'améliore.</p></div>
     </div>
   </div>
 </section>
 </div></div>
 
 <!-- ===== VALUES ===== -->
-<div class="scene" data-label="Engagements"><div class="scene-inner">
+<div class="scene" data-label="Engagements" data-i18n-attr="data-label:app.scene.values"><div class="scene-inner">
 <section class="section tight">
   <div class="container">
     <div class="section-head center reveal">
-      <span class="eyebrow center">Nos engagements</span>
-      <h2>Ce sur quoi vous pouvez compter</h2>
+      <span class="eyebrow center" data-i18n="app.val.eyebrow">Nos engagements</span>
+      <h2 data-i18n="app.val.h2">Ce sur quoi vous pouvez compter</h2>
     </div>
     <div class="pillars">
       <div class="pillar reveal">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
-        <h3>Transparence totale</h3>
-        <p>Un périmètre clair, un budget annoncé, des points réguliers. Pas de surprise, pas de jargon inutile.</p>
+        <h3 data-i18n="app.val.1.h">Transparence totale</h3>
+        <p data-i18n="app.val.1.p">Un périmètre clair, un budget annoncé, des points réguliers. Pas de surprise, pas de jargon inutile.</p>
       </div>
       <div class="pillar reveal" data-delay="80">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <h3>Sécurité &amp; conformité</h3>
-        <p>Protection des données, hébergement maîtrisé et des mesures de sécurité et une conformité RGPD adaptées à votre secteur et à vos besoins.</p>
+        <h3 data-i18n="app.val.2.h">Sécurité &amp; conformité</h3>
+        <p data-i18n="app.val.2.p">Protection des données, hébergement maîtrisé et des mesures de sécurité et une conformité RGPD adaptées à votre secteur et à vos besoins.</p>
       </div>
       <div class="pillar reveal" data-delay="160">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-        <h3>Un partenaire, pas un prestataire</h3>
-        <p>On apprend votre métier, on parle votre langage et on reste joignable après la livraison. Votre réussite est la nôtre.</p>
+        <h3 data-i18n="app.val.3.h">Un partenaire, pas un prestataire</h3>
+        <p data-i18n="app.val.3.p">On apprend votre métier, on parle votre langage et on reste joignable après la livraison. Votre réussite est la nôtre.</p>
       </div>
     </div>
   </div>
@@ -104,31 +105,31 @@
 </div></div>
 
 <!-- ===== EXPERTISE ===== -->
-<div class="scene" data-label="Expertise"><div class="scene-inner">
+<div class="scene" data-label="Expertise" data-i18n-attr="data-label:app.scene.exp"><div class="scene-inner">
 <section class="section" id="expertise">
   <div class="container">
     <div class="split reveal">
       <div class="split-copy">
-        <span class="eyebrow">Expertise technique</span>
-        <h2>Une stack de pointe, maîtrisée de bout en bout</h2>
-        <p class="lead">Du prototype à la production, nous couvrons toute la chaîne : IA générative, vision par ordinateur, architecture cloud, sécurité et intégration.</p>
-        <a href="contact.html" class="btn btn-primary magnetic">Parler de votre projet
+        <span class="eyebrow" data-i18n="app.exp.eyebrow">Expertise technique</span>
+        <h2 data-i18n="app.exp.h2">Une stack de pointe, maîtrisée de bout en bout</h2>
+        <p class="lead" data-i18n="app.exp.lead">Du prototype à la production, nous couvrons toute la chaîne : IA générative, vision par ordinateur, architecture cloud, sécurité et intégration.</p>
+        <a href="contact.html" class="btn btn-primary magnetic"><span data-i18n="app.exp.btn">Parler de votre projet</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
       </div>
       <div class="chips reveal" data-delay="120" style="align-content:flex-start">
-        <span class="chip">IA générative</span>
-        <span class="chip">Vision par ordinateur</span>
+        <span class="chip" data-i18n="app.chip.gen">IA générative</span>
+        <span class="chip" data-i18n="app.chip.vision">Vision par ordinateur</span>
         <span class="chip">RAG</span>
         <span class="chip">Prompt engineering</span>
-        <span class="chip">Synthèse vocale</span>
+        <span class="chip" data-i18n="app.chip.tts">Synthèse vocale</span>
         <span class="chip">Python</span>
         <span class="chip">Node.js</span>
         <span class="chip">React · TypeScript</span>
-        <span class="chip">Architecture cloud</span>
+        <span class="chip" data-i18n="app.chip.cloud">Architecture cloud</span>
         <span class="chip">Azure</span>
-        <span class="chip">RGPD by design</span>
-        <span class="chip">Intégration CRM / ERP</span>
+        <span class="chip" data-i18n="app.chip.rgpd">RGPD by design</span>
+        <span class="chip" data-i18n="app.chip.crm">Intégration CRM / ERP</span>
       </div>
     </div>
   </div>
@@ -136,33 +137,33 @@
 </div></div>
 
 <!-- ===== FAQ ===== -->
-<div class="scene" data-label="FAQ"><div class="scene-inner">
+<div class="scene" data-label="FAQ" data-i18n-attr="data-label:nav.faq"><div class="scene-inner">
 <section class="section tight">
   <div class="container">
     <div class="section-head center reveal">
-      <span class="eyebrow center">Questions fréquentes</span>
-      <h2>Ce qu'on nous demande souvent</h2>
+      <span class="eyebrow center" data-i18n="app.faq.eyebrow">Questions fréquentes</span>
+      <h2 data-i18n="app.faq.h2">Ce qu'on nous demande souvent</h2>
     </div>
     <div class="faq">
       <div class="faq-item reveal">
-        <div class="faq-q">Combien de temps pour livrer un premier outil ?<span class="pm"></span></div>
-        <div class="faq-a"><div class="faq-a-inner">Cela dépend du périmètre, mais notre approche vise une première version utilisable rapidement. Nous privilégions les livraisons courtes et itératives : vous voyez le résultat tôt, puis on l'affine ensemble plutôt que d'attendre des mois un produit « fini ».</div></div>
+        <div class="faq-q"><span data-i18n="app.faq.q1">Combien de temps pour livrer un premier outil ?</span><span class="pm"></span></div>
+        <div class="faq-a"><div class="faq-a-inner" data-i18n="app.faq.a1">Cela dépend du périmètre, mais notre approche vise une première version utilisable rapidement. Nous privilégions les livraisons courtes et itératives : vous voyez le résultat tôt, puis on l'affine ensemble plutôt que d'attendre des mois un produit « fini ».</div></div>
       </div>
       <div class="faq-item reveal">
-        <div class="faq-q">Mes données sont-elles en sécurité ?<span class="pm"></span></div>
-        <div class="faq-a"><div class="faq-a-inner">Oui. La protection des données est pensée dès la conception : hébergement maîtrisé, accès contrôlés et conformité RGPD. Pour les secteurs réglementés (santé, public), nous adaptons l'architecture à vos exigences de confidentialité et de souveraineté.</div></div>
+        <div class="faq-q"><span data-i18n="app.faq.q2">Mes données sont-elles en sécurité ?</span><span class="pm"></span></div>
+        <div class="faq-a"><div class="faq-a-inner" data-i18n="app.faq.a2">Oui. La protection des données est pensée dès la conception : hébergement maîtrisé, accès contrôlés et conformité RGPD. Pour les secteurs réglementés (santé, public), nous adaptons l'architecture à vos exigences de confidentialité et de souveraineté.</div></div>
       </div>
       <div class="faq-item reveal">
-        <div class="faq-q">Faut-il être « tech » pour travailler avec vous ?<span class="pm"></span></div>
-        <div class="faq-a"><div class="faq-a-inner">Pas du tout. Notre rôle est justement de faire le pont entre votre métier et la technique. Vous nous expliquez vos tâches et vos contraintes ; nous traduisons cela en un outil simple à utiliser, et nous accompagnons vos équipes dans la prise en main.</div></div>
+        <div class="faq-q"><span data-i18n="app.faq.q3">Faut-il être « tech » pour travailler avec vous ?</span><span class="pm"></span></div>
+        <div class="faq-a"><div class="faq-a-inner" data-i18n="app.faq.a3">Pas du tout. Notre rôle est justement de faire le pont entre votre métier et la technique. Vous nous expliquez vos tâches et vos contraintes ; nous traduisons cela en un outil simple à utiliser, et nous accompagnons vos équipes dans la prise en main.</div></div>
       </div>
       <div class="faq-item reveal">
-        <div class="faq-q">Comment se passe la facturation ?<span class="pm"></span></div>
-        <div class="faq-a"><div class="faq-a-inner">L'audit initial est gratuit et sans engagement. Ensuite, nous établissons un périmètre et un budget clairs avant de démarrer. Vous savez exactement ce que vous payez et ce que vous obtenez.</div></div>
+        <div class="faq-q"><span data-i18n="app.faq.q4">Comment se passe la facturation ?</span><span class="pm"></span></div>
+        <div class="faq-a"><div class="faq-a-inner" data-i18n="app.faq.a4">L'audit initial est gratuit et sans engagement. Ensuite, nous établissons un périmètre et un budget clairs avant de démarrer. Vous savez exactement ce que vous payez et ce que vous obtenez.</div></div>
       </div>
       <div class="faq-item reveal">
-        <div class="faq-q">Et après la livraison ?<span class="pm"></span></div>
-        <div class="faq-a"><div class="faq-a-inner">Un outil vivant a besoin d'évoluer. Nous assurons la maintenance, le support et les évolutions continues pour que votre solution reste performante, sécurisée et alignée sur vos besoins au fil du temps.</div></div>
+        <div class="faq-q"><span data-i18n="app.faq.q5">Et après la livraison ?</span><span class="pm"></span></div>
+        <div class="faq-a"><div class="faq-a-inner" data-i18n="app.faq.a5">Un outil vivant a besoin d'évoluer. Nous assurons la maintenance, le support et les évolutions continues pour que votre solution reste performante, sécurisée et alignée sur vos besoins au fil du temps.</div></div>
       </div>
     </div>
   </div>
@@ -170,15 +171,15 @@
 </div></div>
 
 <!-- ===== CTA ===== -->
-<div class="scene" data-label="Contact"><div class="scene-inner">
+<div class="scene" data-label="Contact" data-i18n-attr="data-label:scene.contact"><div class="scene-inner">
 <section class="section tight">
   <div class="container">
     <div class="cta-band cta-photo reveal">
       <img class="cta-art" src="assets/img/cta-4.jpg" alt="" loading="lazy" decoding="async">
-      <h2>Commençons par un échange</h2>
-      <p class="lead">30 minutes pour comprendre votre besoin et vous dire, honnêtement, ce que l'IA peut faire pour vous.</p>
+      <h2 data-i18n="app.cta.h2">Commençons par un échange</h2>
+      <p class="lead" data-i18n="app.cta.lead">30 minutes pour comprendre votre besoin et vous dire, honnêtement, ce que l'IA peut faire pour vous.</p>
       <div class="hero-cta">
-        <a href="contact.html" class="btn btn-primary btn-lg magnetic">Réserver mon audit gratuit</a>
+        <a href="contact.html" class="btn btn-primary btn-lg magnetic" data-i18n="app.cta.btn">Réserver mon audit gratuit</a>
       </div>
     </div>
   </div>

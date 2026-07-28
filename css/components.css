@@ -598,3 +598,14 @@
   .va-launch,.va-panel,.va-start{transition:none}
   .va-launch .va-dot,.va-orb span,.va-orb::after{animation:none;transition:none}
 }
+
+/* ---------- RTL (arabe) : miroirs des composants directionnels ---------- */
+[dir="rtl"] .prose-block ul{padding-right:0}
+[dir="rtl"] .prose-block ul li{padding-left:0;padding-right:26px}
+[dir="rtl"] .prose-block ul li::before{left:auto;right:4px}
+[dir="rtl"] .toc a{border-left:0;padding-left:0;margin-left:0;border-right:2px solid transparent;padding-right:12px;margin-right:-12px}
+[dir="rtl"] .sol-num{right:auto;left:28px}
+[dir="rtl"] .proc-step:not(:last-child)::after{left:auto;right:80px}
+[dir="rtl"] .case-media .confidential{left:auto;right:14px}
+[dir="rtl"] .case-media .gallery-badge{right:auto;left:14px}
+[dir="rtl"] .va-teaser p{padding-right:0;padding-left:16px}

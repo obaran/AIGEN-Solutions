@@ -26,7 +26,10 @@ const SYSTEM_PROMPT = [
   "Mener une vraie DÉCOUVERTE COMMERCIALE par la voix : comprendre en profondeur le besoin du visiteur, et recueillir un maximum d'informations pour préparer le premier entretien de l'équipe. Tu fais, en amont, une partie du travail qu'un commercial ferait en rendez-vous. Tu ne vends rien et tu ne t'engages sur RIEN (ni prix, ni délai, ni faisabilité définitive) : tu explores, tu suggères des pistes, tu recueilles.",
   "",
   "# Ton et posture",
-  "Posé, calme, professionnel, bienveillant. Français, phrases courtes, débit mesuré. Jamais de tiret cadratin. Tu écoutes plus que tu ne parles, une question à la fois. Tu utilises le prénom une fois connu.",
+  "Posé, calme, professionnel, bienveillant. Phrases courtes, débit mesuré. Jamais de tiret cadratin. Tu écoutes plus que tu ne parles, une question à la fois. Tu utilises le prénom une fois connu.",
+  "",
+  "# Langue",
+  "Par défaut tu parles français. Le système t'indique la langue du navigateur du visiteur (français, anglais ou arabe) : commence ton accueil DANS CETTE LANGUE et poursuis la conversation dans cette langue. Si le visiteur te parle dans une autre langue, adapte-toi naturellement et continue dans SA langue. La synthèse destinée à l'équipe (outil proposer_contact) reste TOUJOURS en français.",
   "",
   "# Accueil",
   "Présente-toi et AIGEN en une à deux phrases, ton posé, puis demande en quoi tu peux aider. (Si le système t'indique que le visiteur revient, vois la section « Visiteur de retour ».)",
@@ -91,12 +94,18 @@ const SESSION_CONFIG = {
   }]
 };
 
-function greetingPrompt(resume) {
+const LANG_NAMES = { fr: 'le français', en: "l'anglais", ar: "l'arabe" };
+function langNote(lang) {
+  const l = LANG_NAMES[lang] ? lang : 'fr';
+  if (l === 'fr') return '';
+  return " La langue du navigateur du visiteur est " + LANG_NAMES[l] + " : fais ton accueil et poursuis la conversation dans cette langue (adapte-toi si le visiteur répond dans une autre langue).";
+}
+function greetingPrompt(resume, lang) {
   if (resume && String(resume).trim()) {
     return "[Le visiteur REVIENT (il a déjà échangé avec toi). Résumé de votre échange précédent : « " + String(resume).slice(0, 1500) +
-      " ». Accueille-le chaleureusement comme quelqu'un que tu connais déjà, sans tout redemander, et propose-lui, avec des mots naturels, de reprendre là où vous en étiez ou d'aborder un nouveau sujet.]";
+      " ». Accueille-le chaleureusement comme quelqu'un que tu connais déjà, sans tout redemander, et propose-lui, avec des mots naturels, de reprendre là où vous en étiez ou d'aborder un nouveau sujet." + langNote(lang) + "]";
   }
-  return "[Le visiteur vient d'ouvrir l'assistant. Accueille-le de façon sobre et professionnelle : présente-toi et AIGEN Solutions en une à deux phrases, sur un ton posé, puis demande comment tu peux l'aider.]";
+  return "[Le visiteur vient d'ouvrir l'assistant. Accueille-le de façon sobre et professionnelle : présente-toi et AIGEN Solutions en une à deux phrases, sur un ton posé, puis demande comment tu peux l'aider." + langNote(lang) + "]";
 }
 
 /* ============ Traitement des leads (email client + brief Fable 5 pour l'équipe) ============ */
@@ -146,19 +155,42 @@ async function fableBrief(l) {
   } catch (e) { log('fable err', e && e.message); return ''; }
 }
 
-async function sendClientConfirm(name, email, mode, creneau, recap) {
+const CONFIRM_I18N = {
+  fr: {
+    hello: 'Bonjour', received: 'Merci pour votre demande, nous l\'avons bien reçue.',
+    visio: 'Dernière étape pour finaliser : <a href="' + BOOKING_URL + '" style="color:#3159C9;font-weight:bold">choisissez votre créneau de 30 minutes</a>. Vous recevrez ensuite l\'invitation avec le lien de la réunion.',
+    call: (c) => 'Un conseiller vous rappellera' + (c ? ' (' + c + ')' : ' très prochainement') + '. Vous pouvez aussi <a href="' + BOOKING_URL + '" style="color:#3159C9">réserver un créneau en ligne</a>.',
+    email: 'Un conseiller reviendra vers vous avec des informations adaptées. Vous pouvez aussi <a href="' + BOOKING_URL + '" style="color:#3159C9">réserver un échange de 30 minutes</a>.',
+    noted: 'Ce que nous avons noté :', bye: 'À très bientôt,', tagline: 'Outils d\'intelligence artificielle sur-mesure · aigen-solutions.fr',
+    subject: 'AIGEN Solutions : votre demande est bien reçue', dir: 'ltr'
+  },
+  en: {
+    hello: 'Hello', received: 'Thank you for your request, we have received it.',
+    visio: 'One last step: <a href="' + BOOKING_URL + '" style="color:#3159C9;font-weight:bold">pick your 30-minute slot</a>. You will then receive the invitation with the meeting link.',
+    call: (c) => 'An advisor will call you back' + (c ? ' (' + c + ')' : ' shortly') + '. You can also <a href="' + BOOKING_URL + '" style="color:#3159C9">book a slot online</a>.',
+    email: 'An advisor will get back to you with relevant information. You can also <a href="' + BOOKING_URL + '" style="color:#3159C9">book a 30-minute call</a>.',
+    noted: 'What we noted:', bye: 'Talk to you soon,', tagline: 'Custom AI tools · aigen-solutions.fr',
+    subject: 'AIGEN Solutions: your request has been received', dir: 'ltr'
+  },
+  ar: {
+    hello: 'مرحباً', received: 'شكراً لطلبكم، لقد استلمناه بنجاح.',
+    visio: 'خطوة أخيرة: <a href="' + BOOKING_URL + '" style="color:#3159C9;font-weight:bold">اختاروا موعدكم (30 دقيقة)</a>. ستصلكم بعد ذلك الدعوة مع رابط الاجتماع.',
+    call: (c) => 'سيتصل بكم مستشارنا' + (c ? ' (' + c + ')' : ' قريباً') + '. يمكنكم أيضاً <a href="' + BOOKING_URL + '" style="color:#3159C9">حجز موعد عبر الإنترنت</a>.',
+    email: 'سيعود إليكم مستشارنا بالمعلومات المناسبة. يمكنكم أيضاً <a href="' + BOOKING_URL + '" style="color:#3159C9">حجز مكالمة لمدة 30 دقيقة</a>.',
+    noted: 'ما سجّلناه:', bye: 'إلى اللقاء قريباً،', tagline: 'أدوات ذكاء اصطناعي مصمّمة حسب الطلب · aigen-solutions.fr',
+    subject: 'AIGEN Solutions: تم استلام طلبكم', dir: 'rtl'
+  }
+};
+async function sendClientConfirm(name, email, mode, creneau, recap, lang) {
+  const L = CONFIRM_I18N[lang] || CONFIRM_I18N.fr;
   const firstName = name.split(' ')[0] || name;
-  const next = mode === 'visio'
-    ? 'Dernière étape pour finaliser : <a href="' + BOOKING_URL + '" style="color:#3159C9;font-weight:bold">choisissez votre créneau de 30 minutes</a>. Vous recevrez ensuite l\'invitation avec le lien de la réunion.'
-    : mode === 'appel'
-    ? 'Un conseiller vous rappellera' + (creneau ? ' (' + esc(creneau) + ')' : ' très prochainement') + '. Vous pouvez aussi <a href="' + BOOKING_URL + '" style="color:#3159C9">réserver un créneau en ligne</a>.'
-    : 'Un conseiller reviendra vers vous avec des informations adaptées. Vous pouvez aussi <a href="' + BOOKING_URL + '" style="color:#3159C9">réserver un échange de 30 minutes</a>.';
-  const html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#232D42;line-height:1.65;max-width:560px">'
-    + '<p>Bonjour ' + esc(firstName) + ',</p>'
-    + '<p>Merci pour votre demande, nous l\'avons bien reçue. ' + next + '</p>'
-    + (recap ? '<div style="background:#F5F7FA;padding:12px 14px;border-radius:8px;color:#4A5568;font-size:14px;margin:14px 0"><strong>Ce que nous avons noté :</strong><br>' + br(String(recap).slice(0, 900)) + '</div>' : '')
-    + '<p>À très bientôt,<br><strong>AIGEN Solutions</strong><br><span style="color:#6E7789;font-size:13px">Outils d\'intelligence artificielle sur-mesure · aigen-solutions.fr</span></p></div>';
-  await resendSend({ from: PRIMARY_FROM, to: [email], reply_to: REPLY_TO_TEAM, subject: 'AIGEN Solutions : votre demande est bien reçue', html });
+  const next = mode === 'visio' ? L.visio : mode === 'appel' ? L.call(esc(creneau)) : L.email;
+  const html = '<div dir="' + L.dir + '" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#232D42;line-height:1.65;max-width:560px">'
+    + '<p>' + L.hello + ' ' + esc(firstName) + ',</p>'
+    + '<p>' + L.received + ' ' + next + '</p>'
+    + (recap ? '<div style="background:#F5F7FA;padding:12px 14px;border-radius:8px;color:#4A5568;font-size:14px;margin:14px 0"><strong>' + L.noted + '</strong><br>' + br(String(recap).slice(0, 900)) + '</div>' : '')
+    + '<p>' + L.bye + '<br><strong>AIGEN Solutions</strong><br><span style="color:#6E7789;font-size:13px">' + L.tagline + '</span></p></div>';
+  await resendSend({ from: PRIMARY_FROM, to: [email], reply_to: REPLY_TO_TEAM, subject: L.subject, html });
 }
 
 async function sendTeamBrief(d) {
@@ -196,6 +228,7 @@ async function processLead(lead) {
   const name = s(lead.name, 200), email = s(lead.email, 200), company = s(lead.company, 200), sector = s(lead.sector, 200);
   const tel = s(lead.tel, 60), creneau = s(lead.creneau, 200), mode = s(lead.mode, 20), topic = s(lead.topic, 200);
   const message = s(lead.message, 6000), synthese = s(lead.synthese, 8000);
+  const lang = ['fr', 'en', 'ar'].indexOf(s(lead.lang, 5)) > -1 ? s(lead.lang, 5) : 'fr';
   const modeLabel = mode === 'visio' ? 'Visioconférence (30 min)' : mode === 'appel' ? 'Appel téléphonique' : mode === 'email' ? 'Échange par email' : '';
   let attachments;
   if (lead.attachment && lead.attachment.content && lead.attachment.filename) {
@@ -203,8 +236,11 @@ async function processLead(lead) {
     const content = String(lead.attachment.content);
     if (content.length < 12 * 1024 * 1024) attachments = [{ filename: fn, content: content }];
   }
-  log('lead', name, mode || '(page)');
-  sendClientConfirm(name, email, mode, creneau, synthese || message).catch((e) => log('confirm err', e && e.message));
+  log('lead', name, (mode || '(page)') + ' lang=' + lang);
+  // La synthèse de l'agent est en français (brief interne) : pour un visiteur
+  // en/ar on ne reprend dans SON email que son propre message.
+  const recapForVisitor = lang === 'fr' ? (synthese || message) : message;
+  sendClientConfirm(name, email, mode, creneau, recapForVisitor, lang).catch((e) => log('confirm err', e && e.message));
   const brief = await fableBrief({ name, company, sector, mode: modeLabel, synthese, message });
   await sendTeamBrief({ name, email, company, sector, tel, creneau, modeLabel, topic, message, synthese, attachments, brief });
 }
@@ -421,12 +457,12 @@ wss.on('connection', async (ws, req) => {
     if (msg.t === 'start') {
       if (started) return; started = true;
       pagePath = String(msg.page || '').slice(0, 120);
-      sendText(greetingPrompt(msg.resume)); // l'agent prend la parole (accueil, ou reprise si contexte)
+      sendText(greetingPrompt(msg.resume, String(msg.lang || 'fr').slice(0, 5))); // accueil dans la langue du navigateur
     } else if (msg.t === 'audio' && msg.d) {
       try { session.sendRealtimeInput({ audio: { data: msg.d, mimeType: 'audio/pcm;rate=16000' } }); } catch (e) {}
     } else if (msg.t === 'form_done') {
       leadDone = true; // le brief de lead part déjà : pas de rapport doublon
-      sendText("[Le visiteur a envoyé ses coordonnées (nom: " + (msg.nom || '') + ", email: " + (msg.email || '') + ") via le canal " + (msg.mode || '') + ". Sa demande a été transmise à l'équipe. Remercie-le chaleureusement, explique la suite selon le canal, puis conclus par une politesse naturelle et appelle l'outil terminer_conversation. Ne prononce jamais de formule technique comme « conversation terminée ».]");
+      sendText("[Le visiteur a envoyé ses coordonnées (nom: " + (msg.nom || '') + ", email: " + (msg.email || '') + ") via le canal " + (msg.mode || '') + ". Sa demande a été transmise à l'équipe. Remercie-le chaleureusement DANS LA LANGUE DE LA CONVERSATION, explique la suite selon le canal, puis conclus par une politesse naturelle et appelle l'outil terminer_conversation. Ne prononce jamais de formule technique comme « conversation terminée ».]");
     }
   });
   ws.on('close', cleanup);

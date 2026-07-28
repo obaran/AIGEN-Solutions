@@ -24,6 +24,9 @@ function leadURL() {
   if (h === "localhost" || h === "127.0.0.1") return "http://localhost:8787/lead";
   return "https://" + RAILWAY_HOST + "/lead";
 }
+// Traduction (js/i18n.js) : T('clé', 'texte français source')
+const T = (k, fr) => (window.AIGENI18N ? window.AIGENI18N.t(k, fr) : fr);
+const LANG = () => (window.AIGENI18N && window.AIGENI18N.lang) || "fr";
 const toB64 = (bytes) => { let s = ""; for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); return btoa(s); };
 const fromB64 = (b64) => { const bin = atob(b64); const u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); return u8; };
 
@@ -65,7 +68,7 @@ class VoiceClient {
         if (m.t === "ready") {
           try { await this._initPlayback(); await this.startMic(); }
           catch (e) { clearTimeout(to); if (!settled) { settled = true; reject(e); } return; }
-          try { ws.send(JSON.stringify({ t: "start", resume: resume || "", page: location.pathname })); } catch (e) {}
+          try { ws.send(JSON.stringify({ t: "start", resume: resume || "", page: location.pathname, lang: LANG() })); } catch (e) {}
           this.lastActivity = Date.now();
           this._timer = setInterval(() => {
             if (this._idlePaused) return;
@@ -165,21 +168,21 @@ function mount() {
 
   const launch = document.createElement("button");
   launch.className = "va-launch va-peek";
-  launch.setAttribute("aria-label", "Tester AIGEN Live, l'assistant vocal");
-  launch.innerHTML = '<span class="va-core"><i></i><i></i><i></i><i></i><span class="va-live">LIVE</span></span><span class="va-label">' + (isKnown() ? "AIGEN&nbsp;Live" : "Essayer l'agent vocal") + '</span>';
+  launch.setAttribute("aria-label", T("va.launch.aria", "Tester AIGEN Live, l'assistant vocal"));
+  launch.innerHTML = '<span class="va-core"><i></i><i></i><i></i><i></i><span class="va-live">LIVE</span></span><span class="va-label">' + (isKnown() ? "AIGEN&nbsp;Live" : T("va.launch.try", "Essayer l'agent vocal")) + '</span>';
 
   const panel = document.createElement("div");
   panel.className = "va-panel"; panel.setAttribute("role", "dialog");
-  panel.setAttribute("aria-label", "Assistant vocal AIGEN Solutions"); panel.setAttribute("aria-hidden", "true");
+  panel.setAttribute("aria-label", T("va.panel.aria", "Assistant vocal AIGEN Solutions")); panel.setAttribute("aria-hidden", "true");
   panel.innerHTML =
     '<div class="va-head"><span class="va-ava">' + ICON_WAVE + '</span>' +
-      '<div class="va-id"><h4>AIGEN&nbsp;Live</h4><div class="va-sub" data-sub>Conseiller vocal IA</div></div>' +
-      '<button class="va-close" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>' +
+      '<div class="va-id"><h4>AIGEN&nbsp;Live</h4><div class="va-sub" data-sub>' + T("va.sub.idle", "Conseiller vocal IA") + '</div></div>' +
+      '<button class="va-close" aria-label="' + T("va.close", "Fermer") + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>' +
     '<div class="va-stage"><div class="va-orb" data-orb><span></span><span></span><span></span></div>' +
-      '<div class="va-status" data-status>Échangez de vive voix avec notre conseiller IA. Il comprend votre besoin et prépare votre premier échange.</div></div>' +
+      '<div class="va-status" data-status>' + T("va.intro", "Échangez de vive voix avec notre conseiller IA. Il comprend votre besoin et prépare votre premier échange.") + '</div></div>' +
     '<div class="va-transcript" data-transcript aria-live="polite"></div>' +
     '<div class="va-controls" data-controls></div>' +
-    '<div class="va-foot">Assistant IA, voix de synthèse. Micro requis. <a href="' + BOOKING_URL + '" target="_blank" rel="noopener">Préférer un créneau ?</a></div>';
+    '<div class="va-foot">' + T("va.foot", "Assistant IA, voix de synthèse. Micro requis.") + ' <a href="' + BOOKING_URL + '" target="_blank" rel="noopener">' + T("va.foot.slot", "Préférer un créneau ?") + '</a></div>';
 
   document.body.appendChild(launch); document.body.appendChild(panel);
   if (isKnown()) setTimeout(function () { launch.classList.remove("va-peek"); }, 4000);
@@ -200,9 +203,9 @@ function mount() {
   }
 
   function setStatus(s) {
-    if (s === "connecting") { statusEl.textContent = "Le live démarre, un instant…"; subEl.textContent = "En direct"; orb.className = "va-orb is-think"; }
-    else if (s === "listening") { statusEl.textContent = "Je vous écoute…"; subEl.textContent = "En direct · à l'écoute"; orb.className = "va-orb is-listen"; }
-    else if (s === "speaking") { statusEl.textContent = "Le conseiller vous répond…"; subEl.textContent = "En direct · parle"; orb.className = "va-orb is-speak"; }
+    if (s === "connecting") { statusEl.textContent = T("va.st.connect", "Le live démarre, un instant…"); subEl.textContent = T("va.sub.live", "En direct"); orb.className = "va-orb is-think"; }
+    else if (s === "listening") { statusEl.textContent = T("va.st.listen", "Je vous écoute…"); subEl.textContent = T("va.sub.listen", "En direct · à l'écoute"); orb.className = "va-orb is-listen"; }
+    else if (s === "speaking") { statusEl.textContent = T("va.st.speak", "Le conseiller vous répond…"); subEl.textContent = T("va.sub.speak", "En direct · parle"); orb.className = "va-orb is-speak"; }
   }
   function setLevel(lvl) { if (!reduce) orb.style.setProperty("--lvl", lvl.toFixed(3)); }
 
@@ -226,18 +229,18 @@ function mount() {
     curMode = mode; curSynthese = synthese || "";
     if (transcript.querySelector(".va-form")) return;
     const isCall = mode === "appel";
-    const title = mode === "appel" ? "Vos coordonnées (pour l'appel)" : (mode === "email" ? "Vos coordonnées" : "Vos coordonnées (pour la visio)");
+    const title = mode === "appel" ? T("va.f.t.call", "Vos coordonnées (pour l'appel)") : (mode === "email" ? T("va.f.t.email", "Vos coordonnées") : T("va.f.t.visio", "Vos coordonnées (pour la visio)"));
     const form = document.createElement("form"); form.className = "va-form";
     form.innerHTML =
       '<div class="va-form-t">' + title + '</div>' +
-      '<input name="nom" autocomplete="name" placeholder="Nom et prénom" required>' +
-      '<input name="email" type="email" autocomplete="email" placeholder="Email" required>' +
-      '<input name="entreprise" autocomplete="organization" placeholder="Entreprise">' +
-      '<input name="secteur" placeholder="Secteur d\'activité">' +
-      '<input name="tel" type="tel" autocomplete="tel" placeholder="' + (isCall ? "Téléphone" : "Téléphone (recommandé)") + '"' + (isCall ? " required" : "") + '>' +
-      (isCall ? '<input name="creneau" placeholder="Créneau qui vous arrange (ex : demain après-midi)">' : '') +
-      '<label class="va-file"><input type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.xls,.xlsx,.csv,.txt" hidden><span class="va-file-lab">📎 Joindre un document (optionnel)</span></label>' +
-      '<button type="submit">Transmettre ma demande</button>' +
+      '<input name="nom" autocomplete="name" placeholder="' + T("va.f.name", "Nom et prénom") + '" required>' +
+      '<input name="email" type="email" autocomplete="email" placeholder="' + T("va.f.email", "Email") + '" required>' +
+      '<input name="entreprise" autocomplete="organization" placeholder="' + T("va.f.company", "Entreprise") + '">' +
+      '<input name="secteur" placeholder="' + T("va.f.sector", "Secteur d\'activité") + '">' +
+      '<input name="tel" type="tel" autocomplete="tel" placeholder="' + (isCall ? T("va.f.tel", "Téléphone") : T("va.f.tel.rec", "Téléphone (recommandé)")) + '"' + (isCall ? " required" : "") + '>' +
+      (isCall ? '<input name="creneau" placeholder="' + T("va.f.slot", "Créneau qui vous arrange (ex : demain après-midi)") + '">' : '') +
+      '<label class="va-file"><input type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.xls,.xlsx,.csv,.txt" hidden><span class="va-file-lab">' + T("va.f.file", "📎 Joindre un document (optionnel)") + '</span></label>' +
+      '<button type="submit">' + T("va.f.send", "Transmettre ma demande") + '</button>' +
       '<div class="va-form-note" data-note></div>';
     transcript.appendChild(form); lastRole = null; lastBubble = form;
     transcript.scrollTop = transcript.scrollHeight;
@@ -247,8 +250,8 @@ function mount() {
     let file = null;
     fileInput.addEventListener("change", () => {
       file = fileInput.files[0] || null;
-      if (file && file.size > MAX_FILE) { fileLab.textContent = "Fichier trop lourd (max 8 Mo)"; file = null; fileInput.value = ""; return; }
-      fileLab.textContent = file ? ("📎 " + file.name) : "📎 Joindre un document (optionnel)";
+      if (file && file.size > MAX_FILE) { fileLab.textContent = T("va.f.file.big", "Fichier trop lourd (max 8 Mo)"); file = null; fileInput.value = ""; return; }
+      fileLab.textContent = file ? ("📎 " + file.name) : T("va.f.file", "📎 Joindre un document (optionnel)");
     });
 
     form.addEventListener("submit", async (e) => {
@@ -256,12 +259,12 @@ function mount() {
       const g = (n) => (form[n] ? form[n].value.trim() : "");
       const nom = g("nom"), email = g("email"), entreprise = g("entreprise"), secteur = g("secteur"), tel = g("tel"), creneau = g("creneau");
       const note = form.querySelector("[data-note]");
-      if (!nom || !/.+@.+\..+/.test(email)) { note.textContent = "Indiquez au moins un nom et un email valide."; return; }
-      if (isCall && !tel) { note.textContent = "Indiquez un numéro pour être rappelé."; return; }
-      const btn = form.querySelector("button"); btn.disabled = true; btn.textContent = "Envoi…";
+      if (!nom || !/.+@.+\..+/.test(email)) { note.textContent = T("va.f.err.id", "Indiquez au moins un nom et un email valide."); return; }
+      if (isCall && !tel) { note.textContent = T("va.f.err.tel", "Indiquez un numéro pour être rappelé."); return; }
+      const btn = form.querySelector("button"); btn.disabled = true; btn.textContent = T("va.f.sending", "Envoi…");
       let attachment = null;
       if (file) { try { attachment = { filename: file.name, content: await fileToB64(file) }; } catch (err) {} }
-      const payload = { name: nom, email, company: entreprise, sector: secteur, tel, creneau, mode, synthese: curSynthese, topic: "Demande via assistant vocal IA (" + mode + ")", attachment };
+      const payload = { name: nom, email, company: entreprise, sector: secteur, tel, creneau, mode, synthese: curSynthese, topic: "Demande via assistant vocal IA (" + mode + ")", attachment, lang: LANG() };
       sess.contact = { nom, email, entreprise, secteur, mode }; if (curSynthese) sess.synthese = curSynthese; scheduleSave();
       fetch(leadURL(), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
         .then((r) => {
@@ -282,15 +285,15 @@ function mount() {
     const wrap = document.createElement("div"); wrap.className = "va-form";
     if (mode === "visio") {
       wrap.innerHTML =
-        '<div class="va-form-ok">✓ Demande transmise. Dernière étape : choisissez votre créneau.</div>' +
-        '<div class="va-booking"><div class="va-booking-h">' + ICON_CAL + ' Réservez votre créneau de 30 min</div>' +
-        '<p>Vous recevrez l\'invitation avec le lien de la réunion.</p>' +
-        '<a class="va-booking-btn" href="' + BOOKING_URL + '" target="_blank" rel="noopener" data-booking>Choisir un créneau</a></div>';
+        '<div class="va-form-ok">' + T("va.ok.visio", "✓ Demande transmise. Dernière étape : choisissez votre créneau.") + '</div>' +
+        '<div class="va-booking"><div class="va-booking-h">' + ICON_CAL + ' ' + T("va.book.h", "Réservez votre créneau de 30 min") + '</div>' +
+        '<p>' + T("va.book.p", "Vous recevrez l\'invitation avec le lien de la réunion.") + '</p>' +
+        '<a class="va-booking-btn" href="' + BOOKING_URL + '" target="_blank" rel="noopener" data-booking>' + T("va.book.btn", "Choisir un créneau") + '</a></div>';
       const b = wrap.querySelector("[data-booking]"); if (b) b.addEventListener("click", () => track("book_appointment"));
     } else if (mode === "appel") {
-      wrap.innerHTML = '<div class="va-form-ok">✓ Demande transmise. Un conseiller vous rappellera au créneau indiqué, et vous recevrez un email de confirmation.</div>';
+      wrap.innerHTML = '<div class="va-form-ok">' + T("va.ok.call", "✓ Demande transmise. Un conseiller vous rappellera au créneau indiqué, et vous recevrez un email de confirmation.") + '</div>';
     } else {
-      wrap.innerHTML = '<div class="va-form-ok">✓ Demande transmise. Vous allez recevoir un récapitulatif et des informations par email.</div>';
+      wrap.innerHTML = '<div class="va-form-ok">' + T("va.ok.email", "✓ Demande transmise. Vous allez recevoir un récapitulatif et des informations par email.") + '</div>';
     }
     return wrap;
   }
@@ -300,12 +303,12 @@ function mount() {
 
   function showError(kind) {
     panel.classList.remove("va-incall");
-    statusEl.textContent = kind === "mic" ? "Je n'ai pas pu accéder au micro. Autorisez-le dans votre navigateur, ou écrivez-nous." : "L'assistant vocal est momentanément indisponible. Vous pouvez réserver un créneau ou nous écrire.";
+    statusEl.textContent = kind === "mic" ? T("va.err.mic", "Je n'ai pas pu accéder au micro. Autorisez-le dans votre navigateur, ou écrivez-nous.") : T("va.err.net", "L'assistant vocal est momentanément indisponible. Vous pouvez réserver un créneau ou nous écrire.");
     orb.className = "va-orb";
-    controls.innerHTML = '<a class="va-alt" href="contact.html">Décrire mon besoin</a><a class="va-alt va-alt-primary" href="' + BOOKING_URL + '" target="_blank" rel="noopener">Choisir un créneau</a>';
+    controls.innerHTML = '<a class="va-alt" href="contact.html">' + T("va.alt.write", "Décrire mon besoin") + '</a><a class="va-alt va-alt-primary" href="' + BOOKING_URL + '" target="_blank" rel="noopener">' + T("va.book.btn", "Choisir un créneau") + '</a>';
   }
   function renderCallControls() {
-    controls.innerHTML = '<button class="va-mute" data-mute aria-pressed="false">' + ICON_MIC + '<span>Couper le micro</span></button><button class="va-end" data-end>Raccrocher</button>';
+    controls.innerHTML = '<button class="va-mute" data-mute aria-pressed="false">' + ICON_MIC + '<span>' + T("va.mute", "Couper le micro") + '</span></button><button class="va-end" data-end>' + T("va.hangup", "Raccrocher") + '</button>';
     panel.querySelector("[data-mute]").addEventListener("click", toggleMute);
     panel.querySelector("[data-end]").addEventListener("click", close);
   }
@@ -313,7 +316,7 @@ function mount() {
     if (!agent) return;
     const btn = panel.querySelector("[data-mute]"); const muted = btn.getAttribute("aria-pressed") === "true";
     agent.setMuted(!muted); btn.setAttribute("aria-pressed", String(!muted));
-    btn.innerHTML = (!muted ? ICON_MIC_OFF : ICON_MIC) + "<span>" + (!muted ? "Réactiver le micro" : "Couper le micro") + "</span>";
+    btn.innerHTML = (!muted ? ICON_MIC_OFF : ICON_MIC) + "<span>" + (!muted ? T("va.unmute", "Réactiver le micro") : T("va.mute", "Couper le micro")) + "</span>";
     btn.classList.toggle("is-muted", !muted);
   }
 
@@ -350,9 +353,9 @@ function mount() {
     if (state === "ended") return;
     if (agent) { agent.disconnect(); agent = null; }
     state = "ended"; orb.className = "va-orb";
-    statusEl.textContent = reason === "idle" ? "Conversation terminée (pas d'activité). Merci de votre visite." : "Conversation terminée. Merci de votre visite.";
-    subEl.textContent = "Terminé";
-    controls.innerHTML = '<button class="va-end" data-close>Fermer</button>';
+    statusEl.textContent = reason === "idle" ? T("va.end.idle", "Conversation terminée (pas d'activité). Merci de votre visite.") : T("va.end", "Conversation terminée. Merci de votre visite.");
+    subEl.textContent = T("va.sub.end", "Terminé");
+    controls.innerHTML = '<button class="va-end" data-close>' + T("va.close", "Fermer") + '</button>';
     const cb = panel.querySelector("[data-close]"); if (cb) cb.addEventListener("click", close);
     if (sess.lines.length) saveSession(sess);
   }
@@ -362,12 +365,12 @@ function mount() {
     open();
     panel.classList.add("va-incall");
     orb.className = "va-orb is-listen";
-    statusEl.textContent = "Content de vous revoir 👋";
-    subEl.textContent = "On continue ?";
+    statusEl.textContent = T("va.back.hi", "Content de vous revoir 👋");
+    subEl.textContent = T("va.back.sub", "On continue ?");
     transcript.innerHTML = "";
     const box = document.createElement("div"); box.className = "va-resume";
-    box.innerHTML = '<p>On reprend là où on s\'était arrêtés, ou on repart sur une nouvelle idée ?</p>' +
-      '<div class="va-resume-btns"><button data-resume>Reprendre le fil</button><button data-fresh class="ghost">Nouveau sujet</button></div>';
+    box.innerHTML = '<p>' + T("va.back.q", "On reprend là où on s\'était arrêtés, ou on repart sur une nouvelle idée ?") + '</p>' +
+      '<div class="va-resume-btns"><button data-resume>' + T("va.back.resume", "Reprendre le fil") + '</button><button data-fresh class="ghost">' + T("va.back.fresh", "Nouveau sujet") + '</button></div>';
     transcript.appendChild(box);
     controls.innerHTML = "";
     box.querySelector("[data-resume]").addEventListener("click", () => { const sum = resumeSummary(loadSession()); transcript.innerHTML = ""; startCall(sum); });
@@ -402,9 +405,9 @@ function mount() {
       try { localStorage.setItem(TEASE_KEY, String(Date.now())); } catch (e) {}
       teaser = document.createElement("div"); teaser.className = "va-teaser";
       teaser.setAttribute("role", "note");
-      teaser.innerHTML = '<button class="va-teaser-x" aria-label="Non merci">&times;</button>' +
-        '<p>Une question ? Notre <strong>agent vocal</strong> vous répond de vive voix.</p>' +
-        '<button class="va-teaser-go">Essayer</button>';
+      teaser.innerHTML = '<button class="va-teaser-x" aria-label="' + T("va.tease.no", "Non merci") + '">&times;</button>' +
+        '<p>' + T("va.tease.p", "Une question ? Notre <strong>agent vocal</strong> vous répond de vive voix.") + '</p>' +
+        '<button class="va-teaser-go">' + T("va.tease.go", "Essayer") + '</button>';
       document.body.appendChild(teaser);
       requestAnimationFrame(function () { teaser.classList.add("in"); });
       teaser.querySelector(".va-teaser-x").addEventListener("click", hideTeaser);
@@ -424,12 +427,12 @@ function mount() {
     hideTeaser();
     const href = a.getAttribute("href");
     const ov = document.createElement("div"); ov.className = "va-rdv";
-    ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", "Préparer votre rendez-vous");
-    ov.innerHTML = '<div class="va-rdv-card"><button class="va-rdv-x" aria-label="Fermer">&times;</button>' +
-      '<h4>Votre rendez-vous, mieux préparé</h4>' +
-      '<p>En deux minutes, décrivez votre besoin à notre agent vocal : votre premier échange sera préparé sur-mesure.</p>' +
-      '<div class="va-rdv-btns"><button class="va-rdv-agent">' + ICON_MIC + '<span>Décrire mon besoin à l\'agent</span></button>' +
-      '<button class="va-rdv-direct">Réserver directement</button></div></div>';
+    ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", T("va.rdv.aria", "Préparer votre rendez-vous"));
+    ov.innerHTML = '<div class="va-rdv-card"><button class="va-rdv-x" aria-label="' + T("va.close", "Fermer") + '">&times;</button>' +
+      '<h4>' + T("va.rdv.h", "Votre rendez-vous, mieux préparé") + '</h4>' +
+      '<p>' + T("va.rdv.p", "En deux minutes, décrivez votre besoin à notre agent vocal : votre premier échange sera préparé sur-mesure.") + '</p>' +
+      '<div class="va-rdv-btns"><button class="va-rdv-agent">' + ICON_MIC + '<span>' + T("va.rdv.agent", "Décrire mon besoin à l\'agent") + '</span></button>' +
+      '<button class="va-rdv-direct">' + T("va.rdv.direct", "Réserver directement") + '</button></div></div>';
     document.body.appendChild(ov);
     requestAnimationFrame(function () { ov.classList.add("in"); });
     const kill = function () { ov.remove(); };
@@ -440,5 +443,10 @@ function mount() {
   }, true);
 }
 
-if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
-else mount();
+// Attendre le dictionnaire de langue (immédiat en français) avant de monter le widget
+function bootVA() {
+  if (window.AIGENI18N) window.AIGENI18N.ready(mount);
+  else mount();
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bootVA);
+else bootVA();

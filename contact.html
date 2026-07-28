@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact · AIGEN Solutions</title>
-<meta name="description" content="Parlez-nous de votre projet. Audit gratuit, réponse sous 24h. AIGEN Solutions conçoit des outils d'IA sur-mesure.">
+<title data-i18n="contact.title">Contact · AIGEN Solutions</title>
+<meta name="description" data-i18n="contact.desc" content="Parlez-nous de votre projet. Audit gratuit, réponse sous 24h. AIGEN Solutions conçoit des outils d'IA sur-mesure.">
 <link rel="canonical" href="https://aigen-solutions.fr/contact.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AIGEN Solutions">
@@ -31,10 +31,11 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"ContactPoint","contactType":"customer support","email":"contact@aigen-solutions.fr","areaServed":"FR","availableLanguage":"French"}
 </script>
+<script src="js/i18n.js"></script>
 <script src="js/logo.js"></script>
 </head>
 <body data-page="contact">
-<a href="#main" class="skip-link">Aller au contenu</a>
+<a href="#main" class="skip-link" data-i18n="a11y.skip">Aller au contenu</a>
 <div class="bg-ambient"></div>
 <div class="bg-grid"></div>
 
@@ -45,10 +46,10 @@
 <section class="page-hero">
   <div class="container">
     <div class="narrow">
-      <div class="breadcrumb reveal"><a href="index.html">Accueil</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Contact</span></div>
-      <span class="eyebrow reveal">Démarrer un projet</span>
-      <h1 class="reveal" data-delay="60">Parlons de <span class="grad">vos tâches chronophages</span></h1>
-      <p class="lead reveal" data-delay="120">Décrivez votre besoin en quelques lignes. Nous revenons vers vous sous 24&nbsp;h avec des pistes concrètes, gratuitement et sans engagement.</p>
+      <div class="breadcrumb reveal"><a href="index.html" data-i18n="scene.home">Accueil</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span data-i18n="footer.l.contact">Contact</span></div>
+      <span class="eyebrow reveal" data-i18n="nav.cta">Démarrer un projet</span>
+      <h1 class="reveal" data-delay="60" data-i18n="contact.h1">Parlons de <span class="grad">vos tâches chronophages</span></h1>
+      <p class="lead reveal" data-delay="120" data-i18n="contact.lead">Décrivez votre besoin en quelques lignes. Nous revenons vers vous sous 24&nbsp;h avec des pistes concrètes, gratuitement et sans engagement.</p>
     </div>
   </div>
 </section>
@@ -58,34 +59,34 @@
     <div class="contact-grid">
       <div class="contact-info reveal">
         <div class="book-card">
-          <span class="eyebrow">Le plus rapide</span>
-          <h3>Réservez un audit de 30&nbsp;min</h3>
-          <p>Choisissez un créneau qui vous arrange : une invitation Microsoft&nbsp;Teams vous est envoyée automatiquement.</p>
+          <span class="eyebrow" data-i18n="contact.book.eyebrow">Le plus rapide</span>
+          <h3 data-i18n="contact.book.h">Réservez un audit de 30&nbsp;min</h3>
+          <p data-i18n="contact.book.p">Choisissez un créneau qui vous arrange : une invitation Microsoft&nbsp;Teams vous est envoyée automatiquement.</p>
           <!-- RDV : page Microsoft Bookings « Réservez avec moi » : une réunion Teams est générée automatiquement. -->
           <a class="btn btn-primary btn-lg" href="https://outlook.office.com/bookwithme/user/c673cf9ffdbd4c9c88b02c4b14af2704@aigen-solutions.fr/meetingtype/e2ZXfTWpkUSvi4rNgcr63w2?anonymous&amp;ismsaljsauthenabled&amp;ep=mlink" data-booking target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Choisir un créneau
+            <span data-i18n="va.book.btn">Choisir un créneau</span>
           </a>
-          <p style="margin:14px 0 0;font-size:14px;line-height:1.55">Ou, encore plus simple : <button type="button" class="va-inline" data-va-open>décrivez votre besoin de vive voix à notre agent</button>. Deux minutes, et votre premier échange sera préparé sur-mesure.</p>
+          <p style="margin:14px 0 0;font-size:14px;line-height:1.55" data-i18n="contact.book.alt">Ou, encore plus simple : <button type="button" class="va-inline" data-va-open>décrivez votre besoin de vive voix à notre agent</button>. Deux minutes, et votre premier échange sera préparé sur-mesure.</p>
         </div>
-        <h3>Comment ça se passe</h3>
-        <p>Un échange simple, orienté résultats. Pas de discours commercial, on cherche d'abord à comprendre si l'IA peut vraiment vous aider.</p>
+        <h3 data-i18n="contact.how.h">Comment ça se passe</h3>
+        <p data-i18n="contact.how.p">Un échange simple, orienté résultats. Pas de discours commercial, on cherche d'abord à comprendre si l'IA peut vraiment vous aider.</p>
         <div class="contact-points">
           <div class="contact-point">
             <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
-            <span><b>1 · Audit gratuit</b><small>On analyse votre besoin et on évalue le potentiel.</small></span>
+            <span data-i18n="contact.pt1"><b>1 · Audit gratuit</b><small>On analyse votre besoin et on évalue le potentiel.</small></span>
           </div>
           <div class="contact-point">
             <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-            <span><b>2 · Échange de 30 min</b><small>On cadre ensemble le périmètre et les priorités.</small></span>
+            <span data-i18n="contact.pt2"><b>2 · Échange de 30 min</b><small>On cadre ensemble le périmètre et les priorités.</small></span>
           </div>
           <div class="contact-point">
             <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg></span>
-            <span><b>3 · Proposition claire</b><small>Périmètre, budget et délais annoncés avant de démarrer.</small></span>
+            <span data-i18n="contact.pt3"><b>3 · Proposition claire</b><small>Périmètre, budget et délais annoncés avant de démarrer.</small></span>
           </div>
           <div class="contact-point">
             <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg></span>
-            <span><b>Écrivez-nous directement</b><small>contact@aigen-solutions.fr</small></span>
+            <span data-i18n="contact.pt4"><b>Écrivez-nous directement</b><small>contact@aigen-solutions.fr</small></span>
           </div>
         </div>
       </div>
@@ -94,27 +95,27 @@
         <!-- Envoi via la fonction serverless /api/contact (Resend, données en UE). Repli e-mail automatique si indisponible. -->
         <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true">
         <div class="field-row">
-          <div class="field"><label>Votre nom</label><input type="text" name="name" placeholder="Jean Dupont" required></div>
-          <div class="field"><label>Votre email</label><input type="email" name="email" placeholder="jean@entreprise.fr" required></div>
+          <div class="field"><label data-i18n="contact.f.name.l">Votre nom</label><input type="text" name="name" placeholder="Jean Dupont" data-i18n-attr="placeholder:contact.f.name.ph" required></div>
+          <div class="field"><label data-i18n="contact.f.email.l">Votre email</label><input type="email" name="email" placeholder="jean@entreprise.fr" data-i18n-attr="placeholder:contact.f.email.ph" required></div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Entreprise</label><input type="text" name="company" placeholder="Nom de votre société"></div>
-          <div class="field"><label>Secteur d'activité</label><input type="text" name="sector" placeholder="BTP, Santé, Services…"></div>
+          <div class="field"><label data-i18n="va.f.company">Entreprise</label><input type="text" name="company" placeholder="Nom de votre société" data-i18n-attr="placeholder:contact.f.company.ph"></div>
+          <div class="field"><label data-i18n="va.f.sector">Secteur d'activité</label><input type="text" name="sector" placeholder="BTP, Santé, Services…" data-i18n-attr="placeholder:contact.f.sector.ph"></div>
         </div>
         <div class="field">
-          <label>Quel est votre besoin ?</label>
+          <label data-i18n="contact.f.topic.l">Quel est votre besoin ?</label>
           <select name="topic">
-            <option>Application métier sur-mesure</option>
-            <option>Extraction / analyse de données</option>
-            <option>Agent IA / automatisation</option>
-            <option>Traitement documentaire</option>
-            <option>Je ne sais pas encore, à définir ensemble</option>
+            <option data-i18n="contact.f.topic.1">Application métier sur-mesure</option>
+            <option data-i18n="contact.f.topic.2">Extraction / analyse de données</option>
+            <option data-i18n="contact.f.topic.3">Agent IA / automatisation</option>
+            <option data-i18n="contact.f.topic.4">Traitement documentaire</option>
+            <option data-i18n="contact.f.topic.5">Je ne sais pas encore, à définir ensemble</option>
           </select>
         </div>
-        <div class="field"><label>Décrivez vos tâches chronophages</label><textarea name="message" placeholder="Quelle tâche aimeriez-vous automatiser ? Combien de temps vous coûte-t-elle aujourd'hui ?" required></textarea></div>
-        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">Envoyer ma demande</button>
-        <div class="form-ok" data-form-ok>Merci ! Votre demande est bien partie, nous revenons vers vous sous 24&nbsp;h.</div>
-        <div class="form-err" data-form-err>Oups, l'envoi a échoué. Réessayez ou écrivez-nous directement à contact@aigen-solutions.fr.</div>
+        <div class="field"><label data-i18n="contact.f.msg.l">Décrivez vos tâches chronophages</label><textarea name="message" placeholder="Quelle tâche aimeriez-vous automatiser ? Combien de temps vous coûte-t-elle aujourd'hui ?" data-i18n-attr="placeholder:contact.f.msg.ph" required></textarea></div>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center" data-i18n="contact.f.send">Envoyer ma demande</button>
+        <div class="form-ok" data-form-ok data-i18n="contact.f.ok">Merci ! Votre demande est bien partie, nous revenons vers vous sous 24&nbsp;h.</div>
+        <div class="form-err" data-form-err data-i18n="contact.f.err">Oups, l'envoi a échoué. Réessayez ou écrivez-nous directement à contact@aigen-solutions.fr.</div>
       </form>
     </div>
   </div>

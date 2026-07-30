@@ -108,15 +108,21 @@ function greetingPrompt(resume, lang) {
   return "[Le visiteur vient d'ouvrir l'assistant. Accueille-le de façon sobre et professionnelle : présente-toi et AIGEN Solutions en une à deux phrases, sur un ton posé, puis demande comment tu peux l'aider." + langNote(lang) + "]";
 }
 
-/* ============ Traitement des leads (email client + brief Fable 5 pour l'équipe) ============ */
+/* ============ Traitement des leads (email client + brief Opus 5 pour l'équipe) ============ */
 const PRIMARY_FROM = 'AIGEN Solutions <formulaire@aigen-solutions.fr>';
 const PRIMARY_TO = ['contact@aigen-solutions.fr'];
 const REPLY_TO_TEAM = 'contact@aigen-solutions.fr';
 const FALLBACK_FROM = 'AIGEN Solutions <onboarding@resend.dev>';
 const BOOKING_URL = 'https://outlook.office.com/bookwithme/user/c673cf9ffdbd4c9c88b02c4b14af2704@aigen-solutions.fr/meetingtype/e2ZXfTWpkUSvi4rNgcr63w2?anonymous&ismsaljsauthenabled&ep=mlink';
-const BRIEF_MODEL = process.env.BRIEF_MODEL || 'claude-fable-5';
+const BRIEF_MODEL = process.env.BRIEF_MODEL || 'claude-opus-5';
+const BRIEF_MODEL_LABEL = process.env.BRIEF_MODEL_LABEL || 'Opus 5';
+// Langue du visiteur, affichée dans les emails internes (langue de travail = français)
+const LANG_LABELS = { fr: 'Français', en: 'Anglais', ar: 'Arabe' };
+const SPEAKER_LABELS = { fr: 'francophone', en: 'anglophone', ar: 'arabophone' };
+const langLabel = (l) => LANG_LABELS[l] || 'Français';
+const speakerLabel = (l) => SPEAKER_LABELS[l] || 'francophone';
 
-const FABLE_SYSTEM = "Tu es le \"manager technique\" d'AIGEN Solutions, agence d'IA sur-mesure. Le fondateur (Onur) vient de recevoir la demande d'un prospect via le site. Prépare-lui un brief INTERNE (jamais envoyé au client) pour son premier rendez-vous. Tu es un architecte de solutions IA senior ET un coach commercial : tu réfléchis en profondeur, tu es pragmatique (aucun fantasme technique), tu proposes des solutions réalistes alignées sur ce qu'AIGEN sait faire : applications métier sur-mesure, extraction et lecture de documents (plans BTP, PDF, fichiers), agents IA vocal et conversationnel, RAG sur documents, vision par ordinateur, automatisation, synthèse documentaire, intégration CRM/ERP.\n\n" +
+const BRIEF_SYSTEM = "Tu es le \"manager technique\" d'AIGEN Solutions, agence d'IA sur-mesure. Le fondateur (Onur) vient de recevoir la demande d'un prospect via le site. Prépare-lui un brief INTERNE (jamais envoyé au client) pour son premier rendez-vous. Tu es un architecte de solutions IA senior ET un coach commercial : tu réfléchis en profondeur, tu es pragmatique (aucun fantasme technique), tu proposes des solutions réalistes alignées sur ce qu'AIGEN sait faire : applications métier sur-mesure, extraction et lecture de documents (plans BTP, PDF, fichiers), agents IA vocal et conversationnel, RAG sur documents, vision par ordinateur, automatisation, synthèse documentaire, intégration CRM/ERP.\n\n" +
   "Format de sortie : HTML simple, uniquement les balises <h3>, <p>, <ul>, <li>, <strong>. Pas de <html> ni <body>, pas d'attribut style, jamais de tiret cadratin. En français. Respecte EXACTEMENT cette structure :\n" +
   "<h3>En bref</h3> : 2 à 4 phrases sur le vrai besoin, la maturité du prospect et l'angle à jouer.\n" +
   "<h3>Pistes d'outils à proposer</h3> : 2 à 4 idées d'outils concrets pour CE prospect ; pour chacun, ce qu'il fait et le gain, en une ligne.\n" +
@@ -131,28 +137,79 @@ async function resendSend(payload) {
   return { ok: r.ok, status: r.status };
 }
 
-async function fableBrief(l) {
+/* ---- Appel Anthropic avec réessais ----
+   Un 429 (débit), 529 (surcharge) ou 5xx est TRANSITOIRE. Sans réessai, un
+   simple pic de charge chez le fournisseur faisait perdre définitivement le
+   brief ou le rapport : aucun email n'arrivait et rien ne le signalait
+   (constaté le 30/07/2026, « rapport fable http 529 »). On réessaie avec une
+   attente croissante, en respectant l'en-tête retry-after quand il est fourni.
+   `fallbacks` : si les garde-fous du modèle refusent la demande, l'API la
+   rejoue côté serveur sur le modèle de repli recommandé au lieu de rendre
+   une réponse vide. */
+const RETRYABLE = new Set([408, 409, 425, 429, 500, 502, 503, 504, 529]);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const backoff = (attempt) => Math.round(2000 * Math.pow(2, attempt - 1) * (1 + Math.random()));
+
+async function anthropicText(what, system, userMsg, maxTokens) {
   if (!process.env.ANTHROPIC_API_KEY) return '';
+  const ATTEMPTS = 4;
+  for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
+    const last = attempt === ATTEMPTS;
+    try {
+      const ctrl = new AbortController();
+      const to = setTimeout(() => ctrl.abort(), 150000);
+      let r;
+      try {
+        r = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST', signal: ctrl.signal,
+          headers: {
+            'x-api-key': process.env.ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01',
+            'anthropic-beta': 'server-side-fallback-2026-07-01',
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: BRIEF_MODEL, max_tokens: maxTokens, fallbacks: 'default',
+            system: system, messages: [{ role: 'user', content: userMsg }]
+          })
+        });
+      } finally { clearTimeout(to); }
+
+      if (r.ok) {
+        const j = await r.json();
+        if (j.stop_reason === 'refusal') { log(what + ': demande refusée par les garde-fous du modèle'); return ''; }
+        const text = (j.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('').trim();
+        if (!text) log(what + ': réponse vide (' + (j.stop_reason || 'sans motif') + ')');
+        return text;
+      }
+
+      const body = await r.text().catch(() => '');
+      if (!RETRYABLE.has(r.status) || last) { log(what + ' http ' + r.status, body.slice(0, 200)); return ''; }
+      const ra = parseInt(r.headers.get('retry-after') || '', 10);
+      const wait = Number.isFinite(ra) ? Math.min(ra * 1000, 60000) : backoff(attempt);
+      log(what + ' http ' + r.status + ' : réessai ' + attempt + '/' + (ATTEMPTS - 1) + ' dans ' + Math.round(wait / 1000) + 's');
+      await sleep(wait);
+    } catch (e) {
+      if (last) { log(what + ' err', e && e.message); return ''; }
+      const wait = backoff(attempt);
+      log(what + ' err ' + (e && e.message) + ' : réessai ' + attempt + '/' + (ATTEMPTS - 1) + ' dans ' + Math.round(wait / 1000) + 's');
+      await sleep(wait);
+    }
+  }
+  return '';
+}
+
+async function managerBrief(l) {
   const userMsg = "Demande reçue via le site AIGEN Solutions.\n"
     + "Contact : " + l.name + (l.company ? " (" + l.company + ")" : "") + "\n"
     + "Secteur : " + (l.sector || 'non précisé') + "\n"
+    + "Langue du visiteur : " + langLabel(l.lang) + "\n"
     + (l.mode ? "Canal souhaité : " + l.mode + "\n" : "")
     + (l.synthese ? "\nSynthèse de l'échange vocal :\n" + l.synthese + "\n" : "")
     + (l.message ? "\nMessage du visiteur :\n" + l.message + "\n" : "")
-    + "\nPrépare le brief interne pour préparer le rendez-vous.";
-  try {
-    const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 150000);
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST', signal: ctrl.signal,
-      headers: { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-      body: JSON.stringify({ model: BRIEF_MODEL, max_tokens: 5000, system: FABLE_SYSTEM, messages: [{ role: 'user', content: userMsg }] })
-    });
-    clearTimeout(to);
-    if (!r.ok) { log('fable http', r.status); return ''; }
-    const j = await r.json();
-    const block = (j.content || []).find(function (c) { return c.type === 'text'; });
-    return block ? block.text : '';
-  } catch (e) { log('fable err', e && e.message); return ''; }
+    + "\nPrépare le brief interne pour préparer le rendez-vous."
+    + (l.lang && l.lang !== 'fr' ? " Le brief reste EN FRANÇAIS, mais signale que l'échange se fera en " + langLabel(l.lang).toLowerCase() + "." : "");
+  return anthropicText('brief', BRIEF_SYSTEM, userMsg, 6000);
 }
 
 const CONFIRM_I18N = {
@@ -198,6 +255,7 @@ async function sendTeamBrief(d) {
     + '<strong>Email :</strong> ' + esc(d.email) + '<br>'
     + '<strong>Entreprise :</strong> ' + (esc(d.company) || 'non précisé') + '<br>'
     + '<strong>Secteur :</strong> ' + (esc(d.sector) || 'non précisé') + '<br>'
+    + '<strong>Langue du visiteur :</strong> ' + esc(langLabel(d.lang)) + '<br>'
     + (d.tel ? '<strong>Téléphone :</strong> ' + esc(d.tel) + '<br>' : '')
     + (d.modeLabel ? '<strong>Canal souhaité :</strong> ' + esc(d.modeLabel) + '<br>' : '')
     + (d.creneau ? '<strong>Créneau souhaité :</strong> ' + esc(d.creneau) + '<br>' : '')
@@ -205,10 +263,10 @@ async function sendTeamBrief(d) {
   const synthBlock = d.synthese ? '<div style="background:#F5F7FA;border-left:3px solid #3159C9;padding:12px 15px;border-radius:8px;margin:10px 0"><strong style="color:#3159C9">Synthèse de l\'agent vocal</strong><br>' + br(d.synthese) + '</div>' : '';
   const msgBlock = d.message ? '<p><strong>Message :</strong><br>' + br(d.message) + '</p>' : '';
   const briefBlock = d.brief
-    ? '<div style="margin-top:22px;padding-top:18px;border-top:2px dashed #D2D9E6"><h2 style="color:#3159C9;margin:0 0 3px">Brief de votre manager technique</h2><p style="color:#6E7789;font-size:13px;margin:0 0 12px">Analyse par Fable 5 pour préparer votre rendez-vous (interne)</p>' + d.brief + '</div>'
-    : '<p style="color:#8A93A6;font-size:13px;margin-top:18px"><em>(Analyse du manager technique indisponible pour cette demande.)</em></p>';
+    ? '<div style="margin-top:22px;padding-top:18px;border-top:2px dashed #D2D9E6"><h2 style="color:#3159C9;margin:0 0 3px">Brief de votre manager technique</h2><p style="color:#6E7789;font-size:13px;margin:0 0 12px">Analyse par ' + esc(BRIEF_MODEL_LABEL) + ' pour préparer votre rendez-vous (interne)</p>' + d.brief + '</div>'
+    : '<p style="color:#8A93A6;font-size:13px;margin-top:18px"><em>(Analyse du manager technique indisponible pour cette demande : le service d\'analyse n\'a pas répondu. Les coordonnées ci-dessus restent complètes.)</em></p>';
   const html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#232D42;line-height:1.6;max-width:640px">'
-    + '<h2 style="color:#3159C9;margin:0 0 10px">Nouvelle demande' + (d.modeLabel ? ' (' + esc(d.modeLabel) + ')' : '') + '</h2>'
+    + '<h2 style="color:#3159C9;margin:0 0 10px">Nouvelle demande' + (d.modeLabel ? ' (' + esc(d.modeLabel) + ')' : '') + (d.lang && d.lang !== 'fr' ? ' · visiteur ' + esc(speakerLabel(d.lang)) : '') + '</h2>'
     + '<div style="background:#fff;border:1px solid #E4E8F0;border-radius:10px;padding:2px 16px">' + rows + synthBlock + msgBlock
     + (d.attachments ? '<p style="color:#4A5568"><em>Pièce jointe : ' + esc(d.attachments[0].filename) + '</em></p>' : '') + '</div>'
     + briefBlock + '</div>';
@@ -241,15 +299,17 @@ async function processLead(lead) {
   // en/ar on ne reprend dans SON email que son propre message.
   const recapForVisitor = lang === 'fr' ? (synthese || message) : message;
   sendClientConfirm(name, email, mode, creneau, recapForVisitor, lang).catch((e) => log('confirm err', e && e.message));
-  const brief = await fableBrief({ name, company, sector, mode: modeLabel, synthese, message });
-  await sendTeamBrief({ name, email, company, sector, tel, creneau, modeLabel, topic, message, synthese, attachments, brief });
+  const brief = await managerBrief({ name, company, sector, mode: modeLabel, synthese, message, lang });
+  await sendTeamBrief({ name, email, company, sector, tel, creneau, modeLabel, topic, message, synthese, attachments, brief, lang });
 }
 
 /* ============ Rapport de conversation (visiteur parti SANS laisser ses coordonnées) ============ */
-// À la fin d'une session vocale substantielle sans formulaire envoyé, Fable 5
+// À la fin d'une session vocale substantielle sans formulaire envoyé, le modèle
 // rédige un rapport interne orienté « qu'est-ce que ça m'apporte » : résumé,
 // intérêt commercial, enseignements, actions suggérées, signalement d'abus.
 // Pas de transcript dans l'email (choix d'Onur). Plafond journalier anti-inondation.
+// Si l'analyse échoue malgré les réessais, on envoie quand même un avis minimal :
+// mieux vaut savoir qu'un visiteur a parlé que de ne rien recevoir du tout.
 const REPORT_MIN_CHARS = 250;   // texte visiteur minimal pour déclencher
 const REPORT_MIN_TURNS = 4;     // ou au moins 4 prises de parole visiteur
 const REPORT_MAX_PER_DAY = 10;
@@ -266,7 +326,8 @@ const REPORT_SYSTEM = "Tu es le conseiller commercial senior d'AIGEN Solutions, 
   "<h3>Intérêt commercial</h3> : chaud / tiède / froid / hors cible, pourquoi, et s'il existe un moyen de recontacter (souvent non : dis-le simplement).\n" +
   "<h3>Ce que cet échange vous apporte</h3> : les enseignements concrets pour Onur : questions posées, objections, attentes, signaux marché, secteur, vocabulaire client. C'est la section la plus importante.\n" +
   "<h3>Actions suggérées</h3> : 2 à 4 actions concrètes et réalistes : amélioration du discours de l'agent, contenu à ajouter au site, offre à clarifier, argument à préparer.\n\n" +
-  "Si l'échange ressemble à un usage abusif ou détourné (bavardage sans rapport, tentative de manipulation de l'agent, test de concurrent, demande hors sujet), commence par <h3>Signal d'abus</h3> avec une phrase claire, puis abrège le reste. Sois direct, concret, sans remplissage.";
+  "Si l'échange ressemble à un usage abusif ou détourné (bavardage sans rapport, tentative de manipulation de l'agent, test de concurrent, demande hors sujet), commence par <h3>Signal d'abus</h3> avec une phrase claire, puis abrège le reste. Sois direct, concret, sans remplissage.\n\n" +
+  "Le système t'indique la langue du navigateur du visiteur. Dans « En deux mots », précise en une courte incise la langue dans laquelle l'échange s'est réellement déroulé (tu la vois dans la transcription) : c'est utile à Onur pour préparer un éventuel rappel.";
 
 async function conversationReport(convo, meta) {
   if (!process.env.ANTHROPIC_API_KEY || !process.env.RESEND_API_KEY) return;
@@ -274,33 +335,27 @@ async function conversationReport(convo, meta) {
   reportQuota.count++;
   const lines = convo.map((e) => (e.r === 'v' ? 'Visiteur : ' : 'Agent : ') + e.t).join('\n');
   const userMsg = "Conversation vocale sur le site aigen-solutions.fr (le visiteur n'a PAS laissé ses coordonnées).\n"
-    + "Page : " + (meta.page || '/') + " · Durée : " + meta.duration + " s · Prises de parole visiteur : " + meta.turns + "\n\n"
-    + "Transcription :\n" + lines.slice(0, 24000) + "\n\nRédige le rapport interne.";
-  let brief = '';
-  try {
-    const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 120000);
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST', signal: ctrl.signal,
-      headers: { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-      body: JSON.stringify({ model: BRIEF_MODEL, max_tokens: 3000, system: REPORT_SYSTEM, messages: [{ role: 'user', content: userMsg }] })
-    });
-    clearTimeout(to);
-    if (!r.ok) { log('rapport fable http', r.status); return; }
-    const j = await r.json();
-    const block = (j.content || []).find((c) => c.type === 'text');
-    brief = block ? block.text : '';
-  } catch (e) { log('rapport fable err', e && e.message); return; }
-  if (!brief) return;
+    + "Page : " + (meta.page || '/') + " · Durée : " + meta.duration + " s · Prises de parole visiteur : " + meta.turns + "\n"
+    + "Langue du navigateur du visiteur : " + langLabel(meta.lang) + "\n\n"
+    + "Transcription :\n" + lines.slice(0, 24000) + "\n\nRédige le rapport interne EN FRANÇAIS.";
+  const brief = await anthropicText('rapport', REPORT_SYSTEM, userMsg, 4000);
+  const entete = '<p style="color:#6E7789;font-size:13px;margin:0 0 14px">Sans laisser ses coordonnées · page ' + esc(meta.page || '/')
+    + ' · ' + meta.duration + ' s d\'échange · visiteur ' + esc(speakerLabel(meta.lang)) + '</p>';
+  // Filet de sécurité : analyse indisponible -> avis minimal plutôt que silence
+  const corps = brief || '<p>L\'analyse automatique de cet échange n\'a pas pu être produite (service d\'analyse indisponible malgré plusieurs tentatives).</p>'
+    + '<p>Ce que l\'on sait tout de même : un visiteur a échangé <strong>' + meta.duration + ' secondes</strong> avec l\'agent vocal ('
+    + meta.turns + ' prise' + (meta.turns > 1 ? 's' : '') + ' de parole) depuis la page <strong>' + esc(meta.page || '/')
+    + '</strong>, en ' + esc(langLabel(meta.lang).toLowerCase()) + ', puis est parti sans laisser ses coordonnées.</p>';
   const html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#232D42;line-height:1.6;max-width:640px">'
     + '<h2 style="color:#3159C9;margin:0 0 4px">Un visiteur a échangé avec l\'agent</h2>'
-    + '<p style="color:#6E7789;font-size:13px;margin:0 0 14px">Sans laisser ses coordonnées · page ' + esc(meta.page || '/') + ' · ' + meta.duration + ' s d\'échange</p>'
-    + brief + '</div>';
-  await resendSend({ from: PRIMARY_FROM, to: PRIMARY_TO, subject: 'Conversation agent vocal : rapport visiteur (sans coordonnées)', html });
-  log('rapport de conversation envoyé');
+    + entete + corps + '</div>';
+  const subject = 'Conversation agent vocal : rapport visiteur (' + speakerLabel(meta.lang) + ', sans coordonnées)';
+  await resendSend({ from: PRIMARY_FROM, to: PRIMARY_TO, subject: subject, html });
+  log('rapport de conversation envoyé' + (brief ? '' : ' (sans analyse)'));
 }
 
 /* ============ Anti-abus /lead : limiteur de débit en mémoire (instance Railway unique) ============ */
-// Protège le coût (appel Fable 5 + emails) contre le spam. Limites généreuses
+// Protège le coût (appel au modèle + emails) contre le spam. Limites généreuses
 // pour ne jamais bloquer un usage légitime, même derrière une IP d'entreprise
 // partagée. Le plafond GLOBAL est le vrai garde-fou : il tient même si l'IP est
 // falsifiée via x-forwarded-for. Ne compte que les leads VALIDES (prêts à traiter).
@@ -380,7 +435,7 @@ wss.on('connection', async (ws, req) => {
   const send = (o) => { try { if (ws.readyState === 1) ws.send(JSON.stringify(o)); } catch (e) {} };
   const startedAt = Date.now();
   let session = null, closed = false, started = false;
-  const convo = []; let leadDone = false, pagePath = '';
+  const convo = []; let leadDone = false, pagePath = '', sessionLang = 'fr';
   const addConvo = (r, t) => {
     const last = convo[convo.length - 1];
     if (last && last.r === r) last.t += t; else convo.push({ r, t });
@@ -400,7 +455,7 @@ wss.on('connection', async (ws, req) => {
     const vTurns = convo.filter((e) => e.r === 'v').length;
     const vChars = convo.filter((e) => e.r === 'v').reduce((n, e) => n + e.t.length, 0);
     if (!leadDone && (vChars >= REPORT_MIN_CHARS || vTurns >= REPORT_MIN_TURNS)) {
-      conversationReport(convo.slice(), { duration, turns: vTurns, page: pagePath }).catch((e) => log('rapport err', e && e.message));
+      conversationReport(convo.slice(), { duration, turns: vTurns, page: pagePath, lang: sessionLang }).catch((e) => log('rapport err', e && e.message));
     }
   };
 
@@ -457,7 +512,10 @@ wss.on('connection', async (ws, req) => {
     if (msg.t === 'start') {
       if (started) return; started = true;
       pagePath = String(msg.page || '').slice(0, 120);
-      sendText(greetingPrompt(msg.resume, String(msg.lang || 'fr').slice(0, 5))); // accueil dans la langue du navigateur
+      const l = String(msg.lang || 'fr').slice(0, 5);
+      sessionLang = LANG_LABELS[l] ? l : 'fr';   // mémorisée pour le rapport interne
+      log('langue visiteur', sessionLang);
+      sendText(greetingPrompt(msg.resume, sessionLang)); // accueil dans la langue du navigateur
     } else if (msg.t === 'audio' && msg.d) {
       try { session.sendRealtimeInput({ audio: { data: msg.d, mimeType: 'audio/pcm;rate=16000' } }); } catch (e) {}
     } else if (msg.t === 'form_done') {

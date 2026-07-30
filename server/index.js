@@ -209,7 +209,9 @@ async function managerBrief(l) {
     + (l.message ? "\nMessage du visiteur :\n" + l.message + "\n" : "")
     + "\nPrépare le brief interne pour préparer le rendez-vous."
     + (l.lang && l.lang !== 'fr' ? " Le brief reste EN FRANÇAIS, mais signale que l'échange se fera en " + langLabel(l.lang).toLowerCase() + "." : "");
-  return anthropicText('brief', BRIEF_SYSTEM, userMsg, 6000);
+  // max_tokens plafonne la RÉFLEXION + le texte ENSEMBLE sur claude-opus-5 :
+  // large, sinon un brief riche se coupe en pleine phrase (leçon du projet Extralys).
+  return anthropicText('brief', BRIEF_SYSTEM, userMsg, Number(process.env.BRIEF_MAX_TOKENS) || 16000);
 }
 
 const CONFIRM_I18N = {
@@ -338,7 +340,7 @@ async function conversationReport(convo, meta) {
     + "Page : " + (meta.page || '/') + " · Durée : " + meta.duration + " s · Prises de parole visiteur : " + meta.turns + "\n"
     + "Langue du navigateur du visiteur : " + langLabel(meta.lang) + "\n\n"
     + "Transcription :\n" + lines.slice(0, 24000) + "\n\nRédige le rapport interne EN FRANÇAIS.";
-  const brief = await anthropicText('rapport', REPORT_SYSTEM, userMsg, 4000);
+  const brief = await anthropicText('rapport', REPORT_SYSTEM, userMsg, Number(process.env.REPORT_MAX_TOKENS) || 12000);
   const entete = '<p style="color:#6E7789;font-size:13px;margin:0 0 14px">Sans laisser ses coordonnées · page ' + esc(meta.page || '/')
     + ' · ' + meta.duration + ' s d\'échange · visiteur ' + esc(speakerLabel(meta.lang)) + '</p>';
   // Filet de sécurité : analyse indisponible -> avis minimal plutôt que silence

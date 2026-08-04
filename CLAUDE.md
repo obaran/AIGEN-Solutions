@@ -94,13 +94,14 @@ Le visiteur qui ouvre l'assistant **ne sait pas à quoi sert la conversation** :
 
 Garde-fous inscrits dans le prompt (section « # Accueil » de `SYSTEM_PROMPT` et `greetingPrompt`), car un accueil trop long fait fuir :
 
-- **QUINZE SECONDES MAXIMUM à l'oral**, règle prioritaire. Mesure réelle après correction : 39 mots en fr, 36 en en, 35 en ar, soit environ 15 à 17 secondes. Une première version à 18,3 s a été resserrée.
-- **Une seule demande à la fois** (« ce qui vous prend du temps »), pas « votre activité ET vos besoins ET votre secteur ».
-- **Au présent** (« je vous dis ») plutôt qu'au futur : plus direct.
+- **QUINZE SECONDES MAXIMUM à l'oral**, règle prioritaire. Mesure réelle en production : 38 mots en fr, 37 en en, 29 en ar, soit 12 à 16 secondes.
+- **LE RYTHME COMPTE AUTANT QUE LE CONTENU.** ⚠️ Piège rencontré le 4 août : une première consigne disait « trois phrases courtes maximum », ce qui produisait mécaniquement un accueil **haché et récité** (retour d'Onur). La règle est désormais l'ALTERNANCE : une phrase courte pour se présenter, **une phrase ample d'un seul souffle** qui porte tout le sens (liée par « et », « pour que », « ensuite »), puis une phrase brève qui rend la parole. Rythme mesuré en production : **8 / 27 / 3 mots**. Trois ou quatre phrases courtes d'affilée sonnent artificielles à l'oral.
+- **L'agent ne promet PAS de donner lui-même la solution** pendant l'appel : il écoute et recueille, c'est l'équipe qui revient ensuite sur ce qui serait réalisable. Formules interdites : « je vous dis ce que l'IA peut faire pour vous », « je vais analyser votre besoin ».
 - **Le bénéfice, jamais la méthode** : interdit de dire « notre approche est », « nous procédons en plusieurs étapes », « je vais recueillir vos besoins ». On annonce où va la conversation, on ne vend pas.
 - **Dit une seule fois** : si le visiteur coupe, l'agent abandonne le reste et écoute. Jamais répété plus tard.
-- **S'il faut raccourcir** : sacrifier la phrase du milieu, jamais la question finale.
+- **S'il faut raccourcir** : sacrifier ce qui suit les deux-points, jamais l'invitation finale.
 - **Seulement pour un nouveau visiteur** : celui qui revient connaît déjà tout cela (branche « Visiteur de retour »).
+- **Vocabulaire idiomatique par langue**, jamais de traduction mot à mot : « conseiller vocal » en français, **« voice assistant »** en anglais (le modèle produisait « vocal counselor », qui désigne un thérapeute), « المساعد الصوتي » en arabe. Règle inscrite dans la section « # Langue » du prompt.
 
 Le texte affiché dans le panneau (`va.intro`, les trois langues) porte la **même promesse** que ce que l'agent dit : le visiteur lit et entend la même chose.
 

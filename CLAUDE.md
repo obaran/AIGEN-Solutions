@@ -88,6 +88,24 @@ AIGEN Solutions — **SAS**, siège **77 Avenue la Bruyère, 38100 Grenoble**, *
 - **Back** (`server/index.js`, sur **Railway**) : relais Node (`ws` + `@google/genai`). Tient la session **Gemini Live** (voix **Charon**, FR, modèle **`gemini-3.1-flash-live-preview`**) avec la **vraie clé**, sur l'**endpoint standard** (fiable). Prompt de découverte commerciale + réalisations + garde-fous (**jamais de tarif**) + outils (`proposer_contact` {mode, synthese}, `terminer_conversation`) définis ici. Endpoint HTTP **`/lead`** (**Opus 5** + emails Resend) également porté par ce serveur. **Anti-abus `/lead`** : limiteur de débit en mémoire (8 leads/IP/15 min, rafale 3/60 s, plafond GLOBAL 80/15 min qui tient même si l'IP est falsifiée) -> réponse **429** sans déclencher le modèle ni email ; le front affiche « trop de demandes, patientez » (page contact : repli mailto). **Rapport de conversation** : si un visiteur discute substantiellement (≥250 caractères ou ≥4 prises de parole) puis part SANS envoyer le formulaire, **Opus 5** rédige un rapport interne emailé à contact@ (En deux mots / Intérêt commercial / Ce que ça vous apporte / Actions suggérées, + signal d'abus éventuel), SANS transcript (choix client), plafond 10/jour. **Si l'analyse échoue malgré les réessais, l'email part quand même** avec un avertissement (durée, page, langue) : mieux qu'un silence total. Note fin de conversation : `terminer_conversation` ne renvoie **pas** de réponse d'outil (sinon le modèle lisait « conversation terminée » à voix haute). Filtrage d'origine + logs.
 - **Pourquoi ce choix** : l'ancien jeton éphémère cachait la clé mais **forçait l'endpoint `BidiGenerateContentConstrained`** (expérimental, échecs intermittents selon navigateur/extensions). Le relais backend = fiabilité (endpoint standard) + clé jamais exposée + base pour de futures fonctionnalités.
 
+### L'accueil de l'agent vocal (4 août 2026)
+
+Le visiteur qui ouvre l'assistant **ne sait pas à quoi sert la conversation** : avant, l'agent se présentait puis demandait « que puis-je pour vous », et beaucoup partaient. L'accueil annonce désormais en trois temps **qui parle**, **ce que le visiteur y gagne**, **la suite possible** (rappel ou créneau, sans engagement), puis rend la parole par une question ouverte.
+
+Garde-fous inscrits dans le prompt (section « # Accueil » de `SYSTEM_PROMPT` et `greetingPrompt`), car un accueil trop long fait fuir :
+
+- **QUINZE SECONDES MAXIMUM à l'oral**, règle prioritaire. Mesure réelle après correction : 39 mots en fr, 36 en en, 35 en ar, soit environ 15 à 17 secondes. Une première version à 18,3 s a été resserrée.
+- **Une seule demande à la fois** (« ce qui vous prend du temps »), pas « votre activité ET vos besoins ET votre secteur ».
+- **Au présent** (« je vous dis ») plutôt qu'au futur : plus direct.
+- **Le bénéfice, jamais la méthode** : interdit de dire « notre approche est », « nous procédons en plusieurs étapes », « je vais recueillir vos besoins ». On annonce où va la conversation, on ne vend pas.
+- **Dit une seule fois** : si le visiteur coupe, l'agent abandonne le reste et écoute. Jamais répété plus tard.
+- **S'il faut raccourcir** : sacrifier la phrase du milieu, jamais la question finale.
+- **Seulement pour un nouveau visiteur** : celui qui revient connaît déjà tout cela (branche « Visiteur de retour »).
+
+Le texte affiché dans le panneau (`va.intro`, les trois langues) porte la **même promesse** que ce que l'agent dit : le visiteur lit et entend la même chose.
+
+⚠️ Le prompt donne un exemple de phrase et le modèle le reprend quasi tel quel : c'est voulu (accueil homogène), mais **toute retouche de l'exemple change ce qu'entendent tous les visiteurs**. Reteste après modification, la longueur dérive vite.
+
 ### Fiabilité des appels au modèle (brief + rapport)
 - `server/index.js` : helper **`anthropicText()`** partagé par le brief de lead et le rapport de conversation. **`BRIEF_MODEL` = `claude-opus-5`** (dernier modèle, moitié du prix de Fable 5) ; libellé affiché dans l'email via `BRIEF_MODEL_LABEL`.
 - **Réessais obligatoires** : 4 tentatives, attente croissante avec gigue, respect de l'en-tête `retry-after`, sur 429 / 529 / 5xx / erreurs réseau. ⚠️ Historique : le 30/07/2026 un **529 (surcharge)** a fait perdre définitivement un rapport de conversation, car l'ancien code abandonnait au premier échec. Ne jamais retirer les réessais.

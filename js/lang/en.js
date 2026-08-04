@@ -60,7 +60,7 @@ window.AIGEN_DICT.en = Object.assign(window.AIGEN_DICT.en || {}, {
   "va.panel.aria": "AIGEN Solutions voice assistant",
   "va.sub.idle": "AI voice advisor",
   "va.close": "Close",
-  "va.intro": "Talk live with our AI advisor. It understands your need and prepares your first meeting.",
+  "va.intro": "Describe your business out loud. Our AI advisor tells you what AI can actually do for you, and prepares your meeting with the team. No commitment.",
   "va.foot": "AI assistant, synthetic voice. Microphone required.",
   "va.foot.slot": "Prefer to book a slot?",
   "va.st.connect": "The live session is starting, one moment…",

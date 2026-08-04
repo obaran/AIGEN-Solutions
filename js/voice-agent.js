@@ -179,7 +179,7 @@ function mount() {
       '<div class="va-id"><h4>AIGEN&nbsp;Live</h4><div class="va-sub" data-sub>' + T("va.sub.idle", "Conseiller vocal IA") + '</div></div>' +
       '<button class="va-close" aria-label="' + T("va.close", "Fermer") + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>' +
     '<div class="va-stage"><div class="va-orb" data-orb><span></span><span></span><span></span></div>' +
-      '<div class="va-status" data-status>' + T("va.intro", "Échangez de vive voix avec notre conseiller IA. Il comprend votre besoin et prépare votre premier échange.") + '</div></div>' +
+      '<div class="va-status" data-status>' + T("va.intro", "Décrivez votre activité de vive voix. Notre conseiller IA vous dit ce que l'IA peut vous apporter, et prépare votre échange avec l'équipe. Sans engagement.") + '</div></div>' +
     '<div class="va-transcript" data-transcript aria-live="polite"></div>' +
     '<div class="va-controls" data-controls></div>' +
     '<div class="va-foot">' + T("va.foot", "Assistant IA, voix de synthèse. Micro requis.") + ' <a href="' + BOOKING_URL + '" target="_blank" rel="noopener">' + T("va.foot.slot", "Préférer un créneau ?") + '</a></div>';

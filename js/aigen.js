@@ -334,6 +334,12 @@
     contactForm();
     var bookBtn = document.querySelector('[data-booking]');
     if (bookBtn) bookBtn.addEventListener('click', function () { if (window.AIGENConsent) AIGENConsent.track('book_appointment'); });
+
+    // Départs vers nos sites produits (extralys.fr, agentvox.fr) : savoir s'ils servent
+    document.addEventListener('click', function (e) {
+      var a = e.target && e.target.closest && e.target.closest('[data-ext-site]');
+      if (a && window.AIGENConsent) AIGENConsent.track('outbound_product', { product: a.getAttribute('data-ext-site') });
+    });
     if (window.AIGENFX) window.AIGENFX.start();
     if (window.AIGENHeroCore) window.AIGENHeroCore.start();
 

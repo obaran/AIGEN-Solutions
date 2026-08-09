@@ -159,9 +159,10 @@
 .case-filters button.active{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .case-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
 .case-card{position:relative;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--line);background:var(--surface);
+  display:flex;flex-direction:column;
   transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .4s}
 .case-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--line-2)}
-.case-media{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--bg-2);cursor:pointer}
+.case-media{position:relative;flex:none;aspect-ratio:16/10;overflow:hidden;background:var(--bg-2);cursor:pointer}
 .case-media img{width:100%;height:100%;object-fit:cover;object-position:top center;transition:transform .8s var(--ease)}
 .case-card:hover .case-media img{transform:scale(1.045)}
 .case-media .gallery-badge{position:absolute;bottom:14px;right:14px;z-index:3;display:flex;align-items:center;gap:7px;
@@ -172,7 +173,7 @@
   padding:6px 12px;border-radius:999px;background:rgba(8,10,15,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.16);
   color:#fff;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
 .case-media .confidential svg{width:12px;height:12px}
-.case-body{padding:26px 28px 30px}
+.case-body{padding:26px 28px 30px;flex:1;display:flex;flex-direction:column}
 .case-tags{display:flex;gap:8px;margin-bottom:13px;flex-wrap:wrap}
 .case-tags span{font-size:11.5px;font-weight:600;letter-spacing:.04em;padding:5px 11px;border-radius:999px;
   background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent-bright);border:1px solid color-mix(in srgb,var(--accent) 26%,transparent)}
@@ -181,6 +182,42 @@
 .case-facts{display:flex;flex-wrap:wrap;gap:9px;border-top:1px solid var(--line);padding-top:18px}
 .case-facts .f{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--fg-soft);font-weight:500}
 .case-facts .f svg{width:15px;height:15px;color:var(--accent-bright);flex:none}
+
+/* ---------- LIEN VERS UN SITE PRODUIT (Extralys, AgentVox) ----------
+   Bandeau collé en bas de carte. La couleur vient du site de destination
+   (--brand / --brand-2 posées en style inline) : le visiteur voit qu'il
+   change d'univers avant même de cliquer. */
+.case-facts:has(+ .case-link){padding-bottom:20px}
+.case-link{position:relative;display:flex;align-items:center;gap:13px;margin:0 -28px -30px;padding:15px 28px 16px;
+  margin-top:auto;border-top:1px solid var(--line);text-decoration:none;color:inherit;overflow:hidden;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--brand) 9%,transparent),transparent 64%);
+  transition:background .45s var(--ease)}
+.case-link::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,var(--brand-2),var(--brand));
+  transform:scaleY(0);transform-origin:top;transition:transform .45s var(--ease)}
+.case-link:hover{background:linear-gradient(90deg,color-mix(in srgb,var(--brand) 18%,transparent),transparent 74%)}
+.case-link:focus-visible{outline-offset:-3px;border-radius:0}
+.case-link:hover::before{transform:scaleY(1)}
+.cl-dot{flex:none;width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--brand-2),var(--brand));
+  box-shadow:0 0 0 0 color-mix(in srgb,var(--brand) 45%,transparent);transition:box-shadow .45s var(--ease)}
+.case-link:hover .cl-dot{box-shadow:0 0 0 5px color-mix(in srgb,var(--brand) 20%,transparent)}
+.cl-txt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.cl-lead{font-family:'Outfit',sans-serif;font-weight:600;font-size:14.5px;line-height:1.3;color:var(--fg)}
+.cl-host{font-size:12px;font-weight:500;color:var(--fg-soft);letter-spacing:.015em}
+.cl-host b{font-weight:600;unicode-bidi:isolate;color:color-mix(in srgb,var(--brand) 50%,var(--fg))}
+.cl-arrow{flex:none;width:16px;height:16px;margin-left:auto;color:var(--fg-soft);
+  transition:transform .45s var(--ease),color .45s var(--ease)}
+.case-link:hover .cl-arrow{transform:translate(3px,-3px);color:color-mix(in srgb,var(--brand) 70%,var(--fg))}
+
+/* Variante discrète, en ligne sous un bouton (page Solutions) */
+.ext-inline{display:inline-flex;align-items:center;gap:9px;font-size:14px;font-weight:600;text-decoration:none;
+  color:var(--fg-soft);transition:color .35s var(--ease)}
+.ext-inline .cl-dot{width:7px;height:7px}
+.ext-inline:hover{color:var(--fg)}
+.ext-inline:hover .cl-dot{box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 20%,transparent)}
+.ext-inline svg{width:14px;height:14px;transition:transform .35s var(--ease)}
+.ext-inline:hover svg{transform:translate(2px,-2px)}
+.cta-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
 
 /* ---------- CTA BAND ---------- */
 .cta-band{position:relative;border-radius:var(--r-xl);padding:74px 56px;text-align:center;overflow:hidden;
@@ -276,6 +313,9 @@
   .field-row{grid-template-columns:1fr}
   .hero-cta .btn{width:100%;justify-content:center}
   .trust-logos{gap:28px}
+  .case-link{gap:11px}
+  .cl-lead{font-size:13.6px}
+  .cl-host{font-size:11.5px}
 }
 
 /* ---------- Consentement cookies : fenêtre CENTRÉE (choix immédiat) ----------
@@ -608,4 +648,11 @@
 [dir="rtl"] .proc-step:not(:last-child)::after{left:auto;right:80px}
 [dir="rtl"] .case-media .confidential{left:auto;right:14px}
 [dir="rtl"] .case-media .gallery-badge{right:auto;left:14px}
+[dir="rtl"] .case-link{background:linear-gradient(270deg,color-mix(in srgb,var(--brand) 9%,transparent),transparent 64%)}
+[dir="rtl"] .case-link:hover{background:linear-gradient(270deg,color-mix(in srgb,var(--brand) 18%,transparent),transparent 74%)}
+[dir="rtl"] .case-link::before{left:auto;right:0}
+[dir="rtl"] .cl-arrow{margin-left:0;margin-right:auto;transform:scaleX(-1)}
+[dir="rtl"] .case-link:hover .cl-arrow{transform:scaleX(-1) translate(3px,-3px)}
+[dir="rtl"] .ext-inline svg{transform:scaleX(-1)}
+[dir="rtl"] .ext-inline:hover svg{transform:scaleX(-1) translate(2px,-2px)}
 [dir="rtl"] .va-teaser p{padding-right:0;padding-left:16px}

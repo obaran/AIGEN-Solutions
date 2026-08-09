@@ -34,6 +34,16 @@ window.AIGEN_DICT.en = Object.assign(window.AIGEN_DICT.en || {}, {
   "footer.l.privacy": "Privacy",
   "form.sending": "Sending…",
 
+  /* ---- Liens vers nos sites produits (extralys.fr, agentvox.fr) ---- */
+  "ext.extralys.lead": "Extralys: try extraction on a floor plan",
+  "ext.extralys.host": "Our dedicated site · <b dir=\"ltr\">extralys.fr</b>",
+  "ext.extralys.inline": "Try it on <b dir=\"ltr\">extralys.fr</b>",
+  "ext.extralys.aria": "Extralys, our dedicated document extraction site (opens in a new tab)",
+  "ext.agentvox.lead": "AgentVox: build your own agent and talk to it",
+  "ext.agentvox.host": "Our dedicated site · <b dir=\"ltr\">agentvox.fr</b>",
+  "ext.agentvox.inline": "Try it on <b dir=\"ltr\">agentvox.fr</b>",
+  "ext.agentvox.aria": "AgentVox, our dedicated voice agent site (opens in a new tab)",
+
   /* ---- Bannière cookies ---- */
   "cookie.text": "Essential cookies only, plus, with your consent, audience measurement to improve the site.",
   "cookie.more": "Learn more",

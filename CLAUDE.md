@@ -69,6 +69,18 @@ L'**accueil cinématique** (plein écran) est actif sur **tous les écrans** (de
 - **Mentions légales volontairement minimales** (choix client) : capital social, n° TVA, nom du dirigeant et hébergeur ont été **retirés**.
 - Pas de **faux chiffres** ni de témoignages inventés.
 
+## 8 bis. Sites annexes : Extralys et AgentVox (liens sortants)
+Deux produits ont leur propre site, hébergés à part sur Vercel : **extralys.fr** (extraction documentaire, décliné du projet client HPI Extraction) et **agentvox.fr** (démonstration d'agent vocal). Le `www.` n'est pas encore référencé, mais l'apex répond en https : **toujours pointer vers l'apex**.
+
+- **Composant `.case-link`** (components.css) : bandeau collé en bas d'une carte réalisation. La couleur vient du **site de destination**, posée en style inline (`--brand` / `--brand-2`) : or `#D4AF37`/`#E8C84A` pour Extralys, turquoise `#0E8C7F`/`#2FB6A4` pour AgentVox. Le visiteur voit qu'il change d'univers avant de cliquer. Variante inline discrète `.ext-inline` (page Solutions) pour ne pas concurrencer le CTA principal.
+- **Emplacements** : cartes HPI Extraction et Agent Vocal IA de `realisations.html`, carte HPI de l'accueil, et sous les CTA des sections 02 et 03 de `solutions.html`. **Pas** sur `contact.html` (page de conversion) ni dans le hero.
+- **`target="_blank"` obligatoire** : un visiteur en pleine conversation avec l'agent vocal perdrait sa session si le lien s'ouvrait dans l'onglet courant.
+- **Hiérarchie sur la carte agent vocal** : « L'essayer maintenant » (agent AIGEN, `data-va-open`) reste le CTA principal dans le corps ; AgentVox est en pied de carte, secondaire.
+- **Le libellé annonce ce que le visiteur trouvera à l'arrivée** : « tester l'extraction sur un plan » (le CTA d'extralys.fr est « Tester avec un plan »), « créer votre propre agent et lui parler » (celui d'agentvox.fr est « Tester mon agent »).
+- **Mesure** : `data-ext-site="extralys|agentvox"` déclenche l'événement GA4 `outbound_product` (délégation dans `aigen.js`), pour savoir si ces liens servent.
+- **JSON-LD** : les deux produits sont déclarés en `brand` de l'organisation dans `index.html` (pas en `sameAs`, réservé aux profils de la société elle-même), pour que Google relie les trois domaines à la même entité.
+- Le domaine s'isole en LTR (`<b dir="ltr">`) : sans cela l'arabe casse l'affichage de `extralys.fr`.
+
 ## 9. Société (mentions légales)
 AIGEN Solutions — **SAS**, siège **77 Avenue la Bruyère, 38100 Grenoble**, **RCS Grenoble 993 234 632** (SIREN 993 234 632). Président : **Onur Baran**. Email : **contact@aigen-solutions.fr**.
 

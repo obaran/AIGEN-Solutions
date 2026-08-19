@@ -110,8 +110,30 @@
   function wireHeader() {
     var header = document.querySelector('.site-header');
     if (header) {
-      var onScroll = function () { header.classList.toggle('scrolled', window.scrollY > 24); };
-      onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+      // En mode scènes la fenêtre ne défile pas : le défilement a lieu dans .scene-inner.
+      // On écoute donc aussi les conteneurs internes (phase de capture), sans quoi le
+      // header resterait à l'état « haut de page » pendant que le contenu passe derrière.
+      var onScroll = function () {
+        var y = window.scrollY || (document.scrollingElement && document.scrollingElement.scrollTop) || 0;
+        if (!y) {
+          var inner = document.querySelector('.scene.is-active .scene-inner');
+          if (inner) y = inner.scrollTop;
+        }
+        header.classList.toggle('scrolled', y > 24);
+      };
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      document.addEventListener('scroll', onScroll, { passive: true, capture: true });
+
+      // La hauteur réelle du header (1 ligne, 2 lignes, arabe plus haut…) est publiée en
+      // variable CSS : les pages s'en servent pour réserver la place au bon endroit.
+      var syncHeight = function () {
+        document.documentElement.style.setProperty(
+          '--header-h', Math.round(header.getBoundingClientRect().height) + 'px');
+      };
+      syncHeight();
+      window.addEventListener('resize', syncHeight);
+      if (window.ResizeObserver) new ResizeObserver(syncHeight).observe(header);
     }
     var tt = document.querySelector('[data-theme-toggle]');
     if (tt) tt.addEventListener('click', toggleTheme);

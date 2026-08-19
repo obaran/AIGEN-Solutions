@@ -91,6 +91,8 @@
       hint.classList.toggle('gone', i > 0);
       var inner = scenes[i].querySelector('.scene-inner');
       if (inner) inner.scrollTop = 0;
+      // la nouvelle scène repart en haut : le header doit quitter son état « défilé »
+      window.dispatchEvent(new Event('scroll'));
     }
 
     function go(i) {

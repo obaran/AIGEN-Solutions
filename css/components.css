@@ -307,7 +307,7 @@
   .proc-step::after{display:none}
 }
 @media(max-width:680px){
-  .hero{padding:132px 0 72px}
+  .hero{padding:calc(var(--header-h,96px) + 34px) 0 72px}
   .sol-grid,.pillars,.case-grid,.proc{grid-template-columns:1fr}
   .cta-band{padding:48px 26px}
   .field-row{grid-template-columns:1fr}

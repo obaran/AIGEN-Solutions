@@ -20,9 +20,12 @@ body.scenes-mode main#main{position:fixed;inset:0;z-index:1}
   transition:opacity .6s var(--ease-out),transform .85s var(--ease-out),filter .6s var(--ease-out),visibility 0s}
 .scenes-mode .scene.is-leaving{opacity:0;visibility:visible;transform:scale(1.05);filter:blur(7px);z-index:1}
 
+/* Le haut de scène est réservé à partir de la HAUTEUR RÉELLE du header
+   (--header-h, publiée par aigen.js) : le contenu défile derrière lui,
+   il ne doit jamais commencer dessous. */
 .scenes-mode .scene-inner{position:absolute;inset:0;width:100%;overflow-y:auto;overflow-x:hidden;
   display:flex;flex-direction:column;justify-content:safe center;
-  padding:104px 0 58px;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior:contain}
+  padding:calc(var(--header-h,82px) + 22px) 0 58px;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior:contain}
 .scenes-mode .scene-inner::-webkit-scrollbar{display:none}
 /* on neutralise les paddings verticaux des sections : la scène centre déjà */
 .scenes-mode .scene-inner .section,
@@ -84,7 +87,7 @@ body.scenes-mode main#main{position:fixed;inset:0;z-index:1}
 /* Hauteurs réduites (portables 13", petites fenêtres) : on compacte pour que
    les scènes tiennent dans l'écran sans défilement interne. */
 @media(max-height:860px){
-  .scenes-mode .scene-inner{padding-top:90px;padding-bottom:44px}
+  .scenes-mode .scene-inner{padding-top:calc(var(--header-h,82px) + 8px);padding-bottom:44px}
   .scenes-mode .hero h1{font-size:clamp(34px,4.6vw,58px);margin:16px 0 18px}
   .scenes-mode .hero .lead{font-size:18px;margin-bottom:26px}
   .scenes-mode .section-head h2{font-size:clamp(28px,3.6vw,44px);margin:14px 0 16px}
@@ -109,7 +112,7 @@ body.scenes-mode main#main{position:fixed;inset:0;z-index:1}
 
 /* Téléphones : header sur 2 lignes + contenu compacté pour tenir à l'écran */
 @media(max-width:680px){
-  .scenes-mode .scene-inner{padding:112px 0 42px}
+  .scenes-mode .scene-inner{padding:calc(var(--header-h,96px) + 14px) 0 42px}
   .scenes-mode .hero h1{font-size:clamp(29px,8.2vw,38px);margin:14px 0 14px}
   .scenes-mode .hero .lead{font-size:16px;margin-bottom:20px}
   .scenes-mode .hero-slogan{margin-bottom:4px}

@@ -69,6 +69,15 @@ L'**accueil cinématique** (plein écran) est actif sur **tous les écrans** (de
 - **Mentions légales volontairement minimales** (choix client) : capital social, n° TVA, nom du dirigeant et hébergeur ont été **retirés**.
 - Pas de **faux chiffres** ni de témoignages inventés.
 
+## 8 ter. Header : opacité et hauteur (⚠️ piège du mode scènes)
+Le contenu passe **derrière** le header : celui-ci doit donc le masquer, sinon les textes se chevauchent et deviennent illisibles (signalé par Onur sur mobile, 19 août 2026).
+
+- **Cause racine** : `wireHeader()` ne regardait que `window.scrollY`. En mode scènes, `body{overflow:hidden}` et le défilement a lieu **dans `.scene-inner`** : `window.scrollY` reste 0, la classe `.scrolled` n'était **jamais** posée, le header restait totalement transparent pendant que la page défilait. Corrigé : l'écouteur est aussi posé sur `document` en **phase de capture** (les événements `scroll` d'un élément ne remontent pas, mais ils se capturent) et lit le `scrollTop` de la scène active. `activate()` (cinematic.js) émet un `scroll` pour que le header quitte son état « défilé » quand une nouvelle scène repart en haut.
+- **Opacité** : `.site-header.scrolled` est à **94 %** (+ blur). À 75 % le texte transparaissait. **Sur ≤1040px le header est 100 % opaque en permanence** (`background:var(--bg)`, bordure basse, ombre portée) : jamais de translucidité sur mobile.
+- **Header mobile sur 2 lignes** (choix d'Onur) : ligne 1 = marque + **bouton de thème tout à droite** ; ligne 2 = **rubriques défilables + sélecteur de langue**. Obtenu avec `.nav-tools{display:contents}` (ses deux enfants deviennent des items de la barre) et un `.bar::after{flex:0 0 100%}` qui force le saut de ligne. Les **pastilles de nav sont opaques** (`var(--bg-2)`), et un masque en dégradé estompe le dernier libellé pour montrer que la ligne continue (inversé en RTL).
+- **`--header-h`** : `aigen.js` publie la hauteur réelle du header (ResizeObserver + resize) en variable CSS. `cinematic.css` (`.scene-inner`), `.page-hero` et `.hero` réservent leur haut avec `calc(var(--header-h) + Npx)`. **Ne jamais revenir à des paddings en dur** : la hauteur change selon la langue (arabe), la largeur et le nombre de lignes.
+- Test navigateur : le cache sert longtemps l'ancien JS/CSS. Pour valider une modif, passer par un **second port** (`python3 -m http.server 8766`) plutôt que par un rechargement.
+
 ## 8 bis. Sites annexes : Extralys et AgentVox (liens sortants)
 Deux produits ont leur propre site, hébergés à part sur Vercel : **extralys.fr** (extraction documentaire, décliné du projet client HPI Extraction) et **agentvox.fr** (démonstration d'agent vocal). Le `www.` n'est pas encore référencé, mais l'apex répond en https : **toujours pointer vers l'apex**.
 

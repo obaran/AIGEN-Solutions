@@ -148,7 +148,9 @@ h1,h2,h3,h4{font-family:'Outfit',system-ui,sans-serif;font-weight:600;letter-spa
 .site-header{position:fixed;top:0;left:0;right:0;z-index:100;transition:all .45s var(--ease)}
 .site-header .bar{display:flex;align-items:center;justify-content:space-between;gap:34px;height:82px;
   transition:all .45s var(--ease);border-bottom:1px solid transparent}
-.site-header.scrolled{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);background:color-mix(in srgb,var(--bg) 75%,transparent)}
+/* Dès que la page défile, le header doit MASQUER ce qui passe dessous.
+   À 75 % le texte transparaissait et se mélangeait aux libellés de la nav. */
+.site-header.scrolled{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);background:color-mix(in srgb,var(--bg) 94%,transparent)}
 .site-header.scrolled .bar{height:66px;border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:12px;color:var(--logo-ink);--logo-bg:var(--bg)}
 .brand .ag-mark{flex:none}
@@ -263,19 +265,43 @@ html[lang="ar"] .page-hero h1{line-height:1.22}
 
 /* ---------- Responsive ---------- */
 @media(max-width:1040px){
-  /* Nav mobile : liens toujours visibles (pills défilables) au lieu du menu burger caché */
-  .site-header .bar{flex-wrap:wrap;height:auto;min-height:58px;padding:9px 0;row-gap:4px}
-  .site-header.scrolled .bar{height:auto}
+  /* Nav mobile : liens toujours visibles (pills défilables) au lieu du menu burger caché.
+     Le header est FRANCHEMENT OPAQUE, jamais translucide : le contenu défile derrière
+     lui, et sur les pages en mode scènes la fenêtre ne défile pas, donc la classe
+     .scrolled ne se déclenchait jamais : le texte de la page se superposait à la nav.
+     Deux lignes : 1) marque + bouton de thème tout à droite, 2) rubriques + langue. */
+  .site-header{background:var(--bg);border-bottom:1px solid var(--line);
+    box-shadow:0 12px 28px -22px rgba(0,0,0,.75)}
+  .site-header.scrolled{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none}
+  .site-header .bar{flex-wrap:wrap;height:auto;min-height:48px;padding:6px 0;row-gap:6px;gap:12px;
+    border-bottom:0}
+  .site-header.scrolled .bar{height:auto;border-bottom:0}
   .brand{order:1}
-  .nav-tools{order:2}
-  .nav{order:3;width:100%;flex-direction:row;align-items:center;gap:8px;margin:0;
-    overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 0}
+  .brand .ag-mark{width:34px;height:34px}
+  .brand .wm .name{font-size:16.5px}
+  /* .nav-tools disparaît comme boîte : ses deux enfants deviennent des items de la barre,
+     ce qui permet de poser le thème en haut à droite et la langue en bas. */
+  .nav-tools{display:contents}
+  .theme-toggle{order:2;margin-inline-start:auto;width:34px;height:34px;border-radius:10px}
+  .theme-toggle svg{width:17px;height:17px}
+  .site-header .bar::after{content:'';order:3;flex:0 0 100%;height:0} /* saut de ligne */
+  .nav{order:4;flex:1 1 0;min-width:0;flex-direction:row;align-items:center;gap:8px;margin:0;
+    overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 0;
+    /* le dernier libellé s'estompe au bord : on voit que la ligne continue */
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent);
+    mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent)}
+  [dir="rtl"] .nav{-webkit-mask-image:linear-gradient(270deg,#000 calc(100% - 20px),transparent);
+    mask-image:linear-gradient(270deg,#000 calc(100% - 20px),transparent)}
   .nav::-webkit-scrollbar{display:none}
-  .nav a.lnk{flex:none;white-space:nowrap;font-size:13.5px;padding:7px 14px;border-radius:999px;
-    background:var(--card-grad-a);border:1px solid var(--line);color:var(--fg-soft)}
+  /* pastilles OPAQUES : rien du contenu ne doit transparaître à travers un libellé */
+  .nav a.lnk{flex:none;white-space:nowrap;font-size:13px;padding:6px 13px;border-radius:999px;
+    background:var(--bg-2);border:1px solid var(--line);color:var(--fg-soft)}
   .nav a.lnk::after{display:none}
   .nav a.lnk:hover,.nav a.lnk.active{color:var(--accent-bright);border-color:var(--accent)}
   .nav .nav-cta{display:none}
+  .lang-switch{order:5;flex:none}
+  .lang-switch select{height:32px;padding:0 26px 0 11px;font-size:13px;border-radius:10px}
+  [dir="rtl"] .lang-switch select{padding:0 11px 0 27px}
   .menu-toggle{display:none}
 }
 @media(max-width:980px){
@@ -285,7 +311,7 @@ html[lang="ar"] .page-hero h1{line-height:1.22}
   body{font-size:16px}
   .container{padding:0 22px}
   .section{padding:80px 0}
-  .page-hero{padding:128px 0 50px}
+  .page-hero{padding:calc(var(--header-h,96px) + 30px) 0 50px}
   .footer-top{grid-template-columns:1fr;gap:32px}
   .lightbox{padding:18px}
   .lb-prev{left:10px}.lb-next{right:10px}

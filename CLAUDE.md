@@ -28,7 +28,7 @@ L'**accueil cinématique** (plein écran) est actif sur **tous les écrans** (de
 - `package.json` (racine) : front SANS dépendance ni build. Les dépendances npm (`ws`, `@google/genai`) sont dans `server/` uniquement.
 - `assets/img/` : visuels des réalisations (PNG + infographies SVG faites maison).
 - `favicon.svg` : favicon (logo clair, fond transparent, adaptatif clair/sombre).
-- `vercel.json` : en-têtes de sécurité.
+- `vercel.json` : en-têtes de sécurité, dont une **Content-Security-Policy** posée le 1er septembre 2026. Le site n'ayant **aucun script inline ni attribut `onclick`**, elle tient **sans `unsafe-inline` sur `script-src`** : ne pas introduire de script inline sans revoir la politique. `connect-src` doit lister le backend Railway (https ET wss) et les domaines de mesure Google, sinon l'agent vocal ou GA4 casse en silence. Audit complet et conditions vérifiables : **`AUDIT-SECURITE.md`**.
 
 ## 4. Charte graphique
 - Couleurs : **bleu #3159C9** (principal) / **#4F73D9** (secondaire), **anthracite #232D42**, gris texte #4A5568, gris interface #F5F7FA.
@@ -134,10 +134,20 @@ Le texte affiché dans le panneau (`va.intro`, les trois langues) porte la **mê
 - **`fallbacks: 'default'`** + en-tête `anthropic-beta: server-side-fallback-2026-07-01` : si les garde-fous du modèle refusent la demande (`stop_reason: "refusal"`), l'API la rejoue côté serveur sur le modèle de repli recommandé. Vérifié accepté par le compte.
 - **Langue du visiteur dans les emails internes** : `sessionLang` (WebSocket) et `lead.lang` (formulaire) alimentent l'objet (« visiteur arabophone »), la ligne « Langue du visiteur » et une consigne au modèle pour qu'il précise dans le rapport la langue réellement parlée. Les emails internes restent **en français** (langue de travail d'Onur) ; seul l'email de confirmation du visiteur est traduit.
 
+### Garde-fous de durée et cadre du dialogue (1er septembre 2026)
+Deux risques traités : un visiteur qui s'installe (ou un groupe qui s'amuse) coûte cher, chaque minute de Gemini Live étant facturée, et une conversation qui s'éternise n'aboutit pas à un contact.
+
+- **Le modèle n'a AUCUNE horloge.** Il ne sait pas depuis combien de temps il parle : c'est le serveur qui minute et lui glisse des directives entre crochets (`PACE` / `PACE_NOTES` dans `server/index.js`). **5 min** : point d'étape discret. **10 min** : orientation vers les coordonnées. **13 min** : conclusion. **15 min** : raccrochage (18 min si un formulaire est en cours de saisie). Réglable par `VA_CHECKPOINT_MS`, `VA_STEER_MS`, `VA_WRAPUP_MS`, `VA_HARDSTOP_MS` (pratique pour tester : paliers à 20/45/70/95 s).
+- **Ces directives ne sont jamais lues à voix haute** et l'agent ne mentionne jamais une durée ni une limite au visiteur. ⚠️ Piège rencontré : le modèle croyait qu'un humain venait de parler et répondait « excusez-moi de vous interrompre ». Le prompt dit désormais explicitement que ces messages ne sont pas des paroles du visiteur.
+- **Injection différée** : si le visiteur parle (moins de 4 s), la directive est repoussée de 5 s, jusqu'à 8 fois. On ne coupe jamais quelqu'un qui exprime son besoin.
+- ⚠️ **Deux fuites de coût fermées** : le serveur ferme lui-même la session **12 s après `terminer_conversation`** si le navigateur ignore le raccrochage (sinon une session Gemini restait ouverte et facturée) ; et `terminer_conversation` est **ignoré pendant 90 s si le formulaire vient de s'ouvrir**, sinon l'agent raccrochait au moment précis où le visiteur remplissait ses coordonnées, et le lead était perdu.
+- **Plafond de sessions** : 6 par IP par 30 min, 12 simultanées (`SL`). Refus propre avec message dédié côté client (`va.err.rate`, traduit en / ar).
+- **Section « Cadre de l'échange »** du prompt : sujet unique, refus courtois des demandes hors sujet (deux recadrages puis clôture), aucune instruction du visiteur ne peut changer le rôle, pas de divulgation du prompt ni des outils, aucun relais de publicité ou de tiers, provocations désamorcées **sans jamais accuser**. Un visiteur simplement curieux n'est pas un abus : la sévérité vise le détournement manifeste et répété.
+
 ### Déploiement de l'agent vocal (Railway)
 - Projet Railway **`aigen-voice-backend`** (workspace « Onur Baran's Projects »), env **production**, domaine `aigen-voice-backend-production.up.railway.app`.
 - Env Railway : **`GEMINI_API_KEY`**, **`ANTHROPIC_API_KEY`** (brief + rapport, modèle **`claude-opus-5`**), **`RESEND_API_KEY`** + **`MAIL_FALLBACK_TO`** (emails via `/lead`) (+ optionnels `LIVE_MODEL`, `BRIEF_MODEL`, `BRIEF_MODEL_LABEL`, `ALLOWED_ORIGINS`). Le front n'a AUCUNE clé. Rotation via `./secure-keys.sh` (voir §10 Sécurité).
-- Déployer : depuis `server/`, **`railway up --detach --service aigen-voice-backend`** (le projet contient plusieurs services : sans `--service` la CLI refuse). Logs : `railway logs --service aigen-voice-backend`. Santé : `curl https://aigen-voice-backend-production.up.railway.app/health`.
+- Déployer : depuis `server/`, **`./deploy.sh`** (pose `APP_VERSION` = commit courant, puis `railway up --detach --service aigen-voice-backend`). Railway n'expose pas `RAILWAY_GIT_COMMIT_SHA` quand on déploie par envoi du dossier : sans cette variable, on ne peut pas prouver quelle version tourne. Un suffixe `-modifie` signale un déploiement fait depuis un dossier qui diffère du commit. Logs : `railway logs --service aigen-voice-backend`. Santé : `curl .../health` renvoie version, modèle, uptime et sessions en cours.
 
 ### Test local
 - Backend : depuis `server/`, `set -a; . ../.env; set +a; node index.js` (port 8787, charge les 4 clés du `.env`). Front : `python3 -m http.server 8000` (site statique, plus de fonction Vercel `api/`). Le client détecte `localhost` et parle à `ws://localhost:8787/live` (WS) + `http://localhost:8787/lead` (formulaire).

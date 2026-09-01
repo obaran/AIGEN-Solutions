@@ -103,6 +103,7 @@ window.AIGEN_DICT.en = Object.assign(window.AIGEN_DICT.en || {}, {
   "va.ok.email": "✓ Request sent. You will receive a summary and information by email.",
   "va.err.mic": "I couldn't access the microphone. Allow it in your browser, or write to us.",
   "va.err.net": "The voice assistant is temporarily unavailable. You can book a slot or write to us.",
+  "va.err.rate": "You have already had several conversations recently. Let's pick this up a little later, or write to us directly.",
   "va.alt.write": "Describe my need",
   "va.mute": "Mute microphone",
   "va.unmute": "Unmute microphone",

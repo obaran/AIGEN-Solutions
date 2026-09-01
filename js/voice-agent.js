@@ -303,7 +303,10 @@ function mount() {
 
   function showError(kind) {
     panel.classList.remove("va-incall");
-    statusEl.textContent = kind === "mic" ? T("va.err.mic", "Je n'ai pas pu accéder au micro. Autorisez-le dans votre navigateur, ou écrivez-nous.") : T("va.err.net", "L'assistant vocal est momentanément indisponible. Vous pouvez réserver un créneau ou nous écrire.");
+    statusEl.textContent =
+      kind === "mic" ? T("va.err.mic", "Je n'ai pas pu accéder au micro. Autorisez-le dans votre navigateur, ou écrivez-nous.")
+      : kind === "rate" ? T("va.err.rate", "Vous avez déjà eu plusieurs conversations récemment. Reprenons un peu plus tard, ou écrivez-nous directement.")
+      : T("va.err.net", "L'assistant vocal est momentanément indisponible. Vous pouvez réserver un créneau ou nous écrire.");
     orb.className = "va-orb";
     controls.innerHTML = '<a class="va-alt" href="contact.html">' + T("va.alt.write", "Décrire mon besoin") + '</a><a class="va-alt va-alt-primary" href="' + BOOKING_URL + '" target="_blank" rel="noopener">' + T("va.book.btn", "Choisir un créneau") + '</a>';
   }
@@ -323,7 +326,8 @@ function mount() {
   function makeAgent() {
     return new VoiceClient({
       onStatus: setStatus, onTranscript: addTranscript, onLevel: setLevel,
-      onError: () => { if (state === "call") endCall("closed"); },
+      // 'rate' : le serveur a refusé une nouvelle session (trop d'appels récents)
+      onError: (kind) => { if (state === "call") endCall("closed"); if (kind === "rate") showError("rate"); },
       onClose: () => { if (state === "call") endCall("closed"); },
       onContact: showContactForm, onEnd: (reason) => endCall(reason)
     });

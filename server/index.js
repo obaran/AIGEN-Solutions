@@ -493,7 +493,20 @@ const server = http.createServer(async (req, res) => {
     processLead(lead).catch((e) => log('processLead err', e && e.message)); // async (Railway reste actif)
     return;
   }
-  if (req.url === '/health' || req.url === '/') { res.writeHead(200, { 'content-type': 'text/plain' }); res.end('AIGEN voice relay OK'); return; }
+  // Santé : sert de sonde à une surveillance externe, et prouve depuis l'extérieur
+  // quelle version tourne réellement (sans quoi on ne peut que le supposer).
+  if (req.url === '/health' || req.url === '/') {
+    const body = {
+      ok: true,
+      version: (process.env.APP_VERSION || process.env.RAILWAY_GIT_COMMIT_SHA || 'inconnue').slice(0, 12),
+      model: MODEL,
+      uptime_s: Math.round(process.uptime()),
+      sessions: liveSessions
+    };
+    res.writeHead(200, { 'content-type': 'application/json' });
+    res.end(JSON.stringify(body));
+    return;
+  }
   res.writeHead(404); res.end();
 });
 
